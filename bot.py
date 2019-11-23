@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from discord.ext import commands
 
 
-load_dotenv()  # dotenv is so we can read the following configs from the .env file
+load_dotenv()  # dotenv is so we can read the following configs from the .env file *MOVE THIS TO HELPERS*
 TOKEN = os.getenv('DISCORD_TOKEN')
 guild = os.getenv('DISCORD_GUILD')
 prefix = os.getenv('prefix')
