@@ -1,7 +1,8 @@
+from helpers import *
 import os
 from dotenv import load_dotenv
 from discord.ext import commands
-from helpers import is_owner
+
 
 load_dotenv()  # dotenv is so we can read the following configs from the .env file
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -10,25 +11,7 @@ prefix = os.getenv('prefix')
 
 bot = commands.Bot(command_prefix=prefix)  # creates the actual bot and assigns it a prefix
 
-
-@bot.command()
-async def ping(ctx):
-    """Returns response time"""
-    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
-
-
-@bot.command()
-async def creload(ctx):
-    """Bot developer Use ONLY"""
-    for filename in os.listdir("./cogs"):
-        if filename.endswith(".py"):
-            bot.reload_extension(f"cogs.{filename[:-3]}")
-            print("Reloaded: " + filename)
-    # owner = os.getenv('owner')
-    # if file.endswith(".py"):
-    #     print("owner verified")
-    #     bot.unload_extension(f"cogs.{file[:-3]}")
-    #     bot.load_extension(f"cogs.{file[:-3]}")
+first_run = 1
 
 
 @bot.event
@@ -36,6 +19,9 @@ async def on_ready():
     for guild in bot.guilds:
         if guild.name == 'CodingGroup':
             break
+    if first_run == 1:
+        init_all_users(bot)
+
     print(
         f'{bot.user} is connected to the following servers:\n'
         f'{guild.name}(id: {guild.id})'
@@ -43,6 +29,31 @@ async def on_ready():
     # commented out for brevity when testing
     # members = '\n - '.join([member.name for member in guild.members])
     # print(f'Guild Members:\n - {members}')
+
+
+@bot.command()
+async def ping(ctx):
+    """Returns response time"""
+    await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
+
+
+@commands.has_role('Grader People')
+@bot.command()
+async def creload(ctx):
+    """For Hillari ONLY (sorry normies)"""
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            bot.reload_extension(f"cogs.{filename[:-3]}")
+            print("Reloaded: " + filename)
+    await ctx.send("Reloaded cogs")
+    # owner = os.getenv('owner')
+    # if file.endswith(".py"):
+    #     print("owner verified")
+    #     bot.unload_extension(f"cogs.{file[:-3]}")
+    #     bot.load_extension(f"cogs.{file[:-3]}")
+
+
+
 
 @commands.command(name="help")
 async def help(self, ctx):
