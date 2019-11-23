@@ -10,37 +10,44 @@ owner = os.getenv('owner')
 def is_owner():
     return commands.check(lambda ctx: ctx.message.author.id == owner)
 
+
 def db_connect():
-    db = mysql.connector.connect(
+    connection = mysql.connector.connect(
         host='localhost',
         database='cs_discord_bot',
         user='hillari',
         # charset='utf8mb4',
         password='password',
+        get_warnings=True
     )
-    # print("Connection ID:", db.connection_id)
-    # print(db)
-    return db
+    return connection
 
 
 def init_all_users(ctx):
     for guild in ctx.guilds:
         for member in guild.members:
-            print(member.name)
-            print(member.id)
-            add_user_to_db(member,guild)
+            add_user_to_db(member, guild)
+                # print(member.name)
+                # print(member.id)
 
 
 def add_user_to_db(member, guild):
-    db = db_connect()
-    mycursor = db.cursor()
+    connection = db_connect()
+    mycursor = connection.cursor()
     # with db.cursor() as cursor:
     # id = (str(guild.id) + str(member.id))
     sql = "INSERT INTO members(discord_id, username, role, " \
           "experience, level, reputation, warnings) " \
           "VALUES (%s,%s,%s,%s,%s,%s,%s);"
-    mycursor.execute(sql, (member.id, str(member.name), "member", 0, 0, 0, 0))
+    data = (member.id, str(member.name), 'role', 0, 0, 0, 0)
+    mycursor.execute(sql, data)
+    connection.commit()
+    mycursor.close()
+    connection.close()
 
+
+# INSERT  INTO members (discord_id, username, role, experience, level, reputation, warnings)  VALUES (12345, 'tuname', 'trole', 0, 0, 0, 'twarning');
+# Query OK, 1 row affected (0.01 sec)
 
 
 
@@ -49,7 +56,7 @@ def add_user_to_db(member, guild):
 # | Field      | Type         | Null | Key | Default | Extra          |
 # +------------+--------------+------+-----+---------+----------------+
 # | id         | int(11)      | NO   | PRI | NULL    | auto_increment |
-# | discord_id | int(11)      | NO   |     | NULL    |                |
+# | discord_id | bigint(20)   | YES  |     | NULL    |                |
 # | username   | varchar(255) | YES  |     | NULL    |                |
 # | role       | varchar(255) | YES  |     | NULL    |                |
 # | experience | int(11)      | YES  |     | NULL    |                |

@@ -53,8 +53,6 @@ async def creload(ctx):
     #     bot.load_extension(f"cogs.{file[:-3]}")
 
 
-
-
 @commands.command(name="help")
 async def help(self, ctx):
     helptext = "```"
@@ -63,18 +61,31 @@ async def help(self, ctx):
     helptext += "```"
     await ctx.send(helptext)
 
+
+# @bot.event
+# async def on_message(message):
+#     """If the bot sees the word rude in a message, it will react with custom emoji"""
+#     if message.author == bot.user:
+#         return
+#
+#     if 'rude' in message.content:
+#         id = 644004926296555549
+#         emoji = bot.get_emoji(id)
+#         await message.add_reaction(emoji)
+#     await bot.process_commands(message)  # We have to do this in order to use events and commands together
+
+
 @bot.event
 async def on_message(message):
     """If the bot sees the word rude in a message, it will react with custom emoji"""
     if message.author == bot.user:
         return
-
-    if 'rude' in message.content:
-        id = 644004926296555549
-        emoji = bot.get_emoji(id)
-        await message.add_reaction(emoji)
-    await bot.process_commands(message)  # We have to do this in order to use events and commands together
-
+    if 'good bot' in message.content:
+        # emojid = 647707023869476874
+        # emoj = bot.get_emoji(emojid)
+        # await message.add_reaction(emoj)
+        await message.channel.send("Awww thanks. I try")
+    await bot.process_commands(message)
 
 # loads all of the cogs
 for filename in os.listdir("./cogs"):

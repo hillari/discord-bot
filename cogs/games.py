@@ -18,26 +18,26 @@ class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        @commands.command()
-        async def choose(self, ctx, *choices: str):
-            input = choices
-            """Chooses between multiple choices e.g. choose <choice> <choice>"""
-            await ctx.send(random.choice(input))
+    @commands.command()
+    async def choose(self, ctx, *choices: str):
+        input = choices
+        """Chooses between multiple choices e.g. choose <choice> <choice>"""
+        await ctx.send(random.choice(input))
 
-        @commands.command()
-        async def repeat(self, ctx, times: int, content='repeating...'):
-            """Repeats a message multiple times e.g. repeat <number> <text>"""
-            if times > 10:
-                await ctx.send("{} times is too much. Please Limit to 10.".format(str(times)))
-            else:
-                for i in range(times):
-                    await ctx.send(content)
+    @commands.command()
+    async def repeat(self, ctx, times: int, content='repeating...'):
+        """Repeats a message multiple times e.g. repeat <number> <text>"""
+        if times > 10:
+            await ctx.send("{} times is too much. Please Limit to 10.".format(str(times)))
+        else:
+            for i in range(times):
+                await ctx.send(content)
 
-        @bot.command(name='8ball', pass_context=True)
-        async def eight_ball(self, ctx):
-            """8 ball game"""
-            print("8ball cmd received")
-            await ctx.send(random.choice(answer_list) + ", " + ctx.message.author.mention)
+    @commands.command(name='8ball')
+    async def eight_ball(self, ctx):
+        """8 ball game"""
+        print("8ball cmd received")
+        await ctx.send(random.choice(answer_list) + ", " + ctx.message.author.mention)
 
 #  Taken from: https://github.com/Der-Eddy/discord_bot/blob/master/cogs/fun.py
     @commands.command()
