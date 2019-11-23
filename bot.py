@@ -11,7 +11,7 @@ prefix = os.getenv('prefix')
 
 bot = commands.Bot(command_prefix=prefix)  # creates the actual bot and assigns it a prefix
 
-first_run = 1
+first_run = 0  # Hacky method to avoid initializing the db each time without commenting out code
 
 
 @bot.event
@@ -46,11 +46,14 @@ async def creload(ctx):
             bot.reload_extension(f"cogs.{filename[:-3]}")
             print("Reloaded: " + filename)
     await ctx.send("Reloaded cogs")
-    # owner = os.getenv('owner')
-    # if file.endswith(".py"):
-    #     print("owner verified")
-    #     bot.unload_extension(f"cogs.{file[:-3]}")
-    #     bot.load_extension(f"cogs.{file[:-3]}")
+
+
+@commands.has_role('Grader People')
+@bot.command(name="cquit")
+async def bot_quit(ctx):
+    """Bot Creator Use ONLY"""
+    await ctx.send("Shutting down...\n\U0001f44b")
+    await bot.logout()
 
 
 @commands.command(name="help")
@@ -77,7 +80,7 @@ async def help(self, ctx):
 
 @bot.event
 async def on_message(message):
-    """If the bot sees the word rude in a message, it will react with custom emoji"""
+    """If the bot sees the words good bot it will respond *MOVE THIS*"""
     if message.author == bot.user:
         return
     if 'good bot' in message.content:
@@ -85,7 +88,7 @@ async def on_message(message):
         # emoj = bot.get_emoji(emojid)
         # await message.add_reaction(emoj)
         await message.channel.send("Awww thanks. I try")
-    await bot.process_commands(message)
+    await bot.process_commands(message) # We have to do this in order to use events and commands together
 
 # loads all of the cogs
 for filename in os.listdir("./cogs"):

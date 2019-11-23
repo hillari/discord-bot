@@ -46,6 +46,20 @@ def add_user_to_db(member, guild):
     connection.close()
 
 
+def get_member(member, guild):
+    connection = db_connect()
+    mycursor = connection.cursor()
+    sql = "SELECT discord_id, username,role,experience,level" \
+          "reputation, warnings FROM members WHERE id=%s"
+    mycursor.execute(sql, (member.id,))
+    result = mycursor.fetchone()
+    if not result:
+        print("New user, adding to db...")
+        add_user_to_db(member, guild)
+    else:
+        return result
+
+
 # INSERT  INTO members (discord_id, username, role, experience, level, reputation, warnings)  VALUES (12345, 'tuname', 'trole', 0, 0, 0, 'twarning');
 # Query OK, 1 row affected (0.01 sec)
 
