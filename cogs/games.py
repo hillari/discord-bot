@@ -1,0 +1,82 @@
+import asyncio
+import aiohttp
+import random
+from discord.ext import commands
+
+
+try:
+    answer_list = []
+    with open("./files/8ball_answers.txt", "r") as answer:
+        lines = answer.readlines()
+        for line in lines:
+            answer_list.append(line.rstrip())
+except Exception:
+    lines = []
+
+
+class Games(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+        @commands.command()
+        async def choose(ctx, *choices: str):
+            """Chooses between multiple choices e.g. choose <choice> <choice>"""
+            await ctx.send(random.choice(choices))
+
+        @bot.command(name='8ball', pass_context=True)
+        async def eight_ball(self, ctx):
+            """8 ball game"""
+            print("8ball cmd received")
+            await ctx.send(random.choice(answer_list) + ", " + ctx.message.author.mention)
+
+#  Taken from: https://github.com/Der-Eddy/discord_bot/blob/master/cogs/fun.py
+    @commands.command()
+    async def countdown(self, ctx):
+        '''It's the final countdown'''
+        countdown = ['five', 'four', 'three', 'two', 'one']
+        for num in countdown:
+            await ctx.send('**:{0}:**'.format(num))
+            await asyncio.sleep(1)
+        await ctx.send('**:ok:** DING DING DING')
+
+    @commands.command()
+    async def praise(self, ctx):
+        '''Praise the Sun'''
+        await ctx.send('https://i.imgur.com/K8ySn3e.gif')
+
+    @commands.command()
+    async def hype(self, ctx):
+        '''HYPE TRAIN CHOO CHOO'''
+        hypu = ['https://cdn.discordapp.com/attachments/102817255661772800/219514281136357376/tumblr_nr6ndeEpus1u21ng6o1_540.gif',
+                'https://cdn.discordapp.com/attachments/102817255661772800/219518372839161859/tumblr_n1h2afSbCu1ttmhgqo1_500.gif',
+                'https://gfycat.com/HairyFloweryBarebirdbat',
+                'https://i.imgur.com/PFAQSLA.gif',
+                'https://abload.de/img/ezgif-32008219442iq0i.gif',
+                'https://i.imgur.com/vOVwq5o.jpg',
+                'https://i.imgur.com/Ki12X4j.jpg',
+                'https://media.giphy.com/media/b1o4elYH8Tqjm/giphy.gif']
+        msg = f':train2: CHOO CHOO {random.choice(hypu)}'
+        await ctx.send(msg)
+
+    @commands.command()
+    async def xkcd(self, ctx, *searchterm: str):
+        ''' Random xkcd '''
+
+        apiUrl = 'https://xkcd.com{}info.0.json'
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(apiUrl.format('/')) as r:
+                js = await r.json()
+                if ''.join(searchterm) == 'random':
+                    randomComic = random.randint(0, js['num'])
+                    async with cs.get(apiUrl.format('/' + str(randomComic) + '/')) as r:
+                        if r.status == 200:
+                            js = await r.json()
+                comicUrl = 'https://xkcd.com/{}/'.format(js['num'])
+                date = '{}.{}.{}'.format(js['day'], js['month'], js['year'])
+                msg = '**{}**\n{}\nAlt Text:```{}```XKCD Link: <{}> ({})'.format(js['safe_title'], js['img'], js['alt'],
+                                                                                 comicUrl, date)
+                await ctx.send(msg)
+
+
+def setup(bot):
+    bot.add_cog(Games(bot))
