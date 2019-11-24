@@ -27,8 +27,8 @@ def init_all_users(ctx):
     for guild in ctx.guilds:
         for member in guild.members:
             add_user_to_db(member, guild)
-                # print(member.name)
-                # print(member.id)
+            # print(member.name)
+            # print(member.id)
 
 
 def add_user_to_db(member, guild):
@@ -40,7 +40,7 @@ def add_user_to_db(member, guild):
           "experience, level, reputation, warnings) " \
           "VALUES (%s,%s,%s,%s,%s,%s,%s);"
     data = (member.id, str(member.name), 'role', 0, 0, 0, 0)
-    mycursor.execute(sql, data)
+    mycursor.execute(sql, data)  # NOTE: execute needs same number of parameters as query
     connection.commit()
     mycursor.close()
     connection.close()
@@ -49,8 +49,7 @@ def add_user_to_db(member, guild):
 def get_member(member, guild):
     connection = db_connect()
     mycursor = connection.cursor()
-    sql = "SELECT discord_id, username,role,experience,level" \
-          "reputation, warnings FROM members WHERE id=%s"
+    sql = "SELECT * FROM members WHERE discord_id=%s"
     mycursor.execute(sql, (member.id,))
     result = mycursor.fetchone()
     if not result:
@@ -59,10 +58,8 @@ def get_member(member, guild):
     else:
         return result
 
-
 # INSERT  INTO members (discord_id, username, role, experience, level, reputation, warnings)  VALUES (12345, 'tuname', 'trole', 0, 0, 0, 'twarning');
 # Query OK, 1 row affected (0.01 sec)
-
 
 
 # mysql> show columns in members;
@@ -78,4 +75,3 @@ def get_member(member, guild):
 # | reputation | int(11)      | YES  |     | NULL    |                |
 # | warnings   | varchar(255) | YES  |     | NULL    |                |
 # +------------+--------------+------+-----+---------+----------------+
-
