@@ -23,6 +23,7 @@ class Member_stats(commands.Cog):
 
     @commands.command()
     async def checkrep(self, ctx, member: discord.Member):
+        """Checks the reputation of specified user"""
         member_info = get_member(member, ctx.message.guild)
 
         embedded = discord.Embed()
@@ -38,6 +39,7 @@ class Member_stats(commands.Cog):
 
     @commands.command()
     async def takerep(self, ctx, member: discord.Member):
+        """Takes Rep from user e.g. takerep <@user>. Cannot be yourself."""
         member_info = get_member(member, ctx.message.guild)
         reputation = member_info[6]
         if ctx.message.author.id == member.id:
@@ -52,7 +54,7 @@ class Member_stats(commands.Cog):
 
     @commands.command()
     async def giverep(self, ctx, member: discord.Member):
-        """Gives Rep to a specified user e.g. giverep <@user>. Cannot be yourself."""
+        """Gives Rep to user e.g. giverep <@user>. Cannot be yourself."""
         if ctx.message.author.id == member.id:
             await ctx.send("You can't give yourself reputation points, fool!")
             return

@@ -40,7 +40,7 @@ async def ping(ctx):
 @commands.has_role('Grader People')
 @bot.command()
 async def creload(ctx):
-    """For Hillari ONLY (sorry normies)"""
+    """Bot Creator Use ONLY"""
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
             bot.reload_extension(f"cogs.{filename[:-3]}")
