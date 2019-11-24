@@ -20,6 +20,7 @@ class Games(commands.Cog):
 
     @commands.command()
     async def choose(self, ctx, *choices: str):
+        """Chooses between strings. Use quotes for phrases"""
         input = choices
         """Chooses between multiple choices e.g. choose <choice> <choice>"""
         await ctx.send(random.choice(input))
@@ -70,7 +71,7 @@ class Games(commands.Cog):
 
     @commands.command()
     async def xkcd(self, ctx, *searchterm: str):
-        ''' Random xkcd '''
+        ''' Random xkcd *Not currently working*'''
 
         apiUrl = 'https://xkcd.com{}info.0.json'
         async with aiohttp.ClientSession() as cs:
