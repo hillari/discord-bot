@@ -32,6 +32,7 @@ def init_all_users(ctx):
 
 
 def add_user_to_db(member, guild):
+    # TODO check if user already exists
     connection = db_connect()
     mycursor = connection.cursor()
     # with db.cursor() as cursor:
@@ -63,15 +64,15 @@ def get_member(member, guild):
 
 
 # mysql> show columns in members;
-# +------------+--------------+------+-----+---------+----------------+
-# | Field      | Type         | Null | Key | Default | Extra          |
-# +------------+--------------+------+-----+---------+----------------+
-# | id         | int(11)      | NO   | PRI | NULL    | auto_increment |
-# | discord_id | bigint(20)   | YES  |     | NULL    |                |
-# | username   | varchar(255) | YES  |     | NULL    |                |
-# | role       | varchar(255) | YES  |     | NULL    |                |
-# | experience | int(11)      | YES  |     | NULL    |                |
-# | level      | int(11)      | YES  |     | NULL    |                |
-# | reputation | int(11)      | YES  |     | NULL    |                |
-# | warnings   | varchar(255) | YES  |     | NULL    |                |
-# +------------+--------------+------+-----+---------+----------------+
+# +------------+--------------+------+-----+---------+-------+
+# | Field      | Type         | Null | Key | Default | Extra |
+# +------------+--------------+------+-----+---------+-------+
+# | discord_id | bigint(20)   | NO   | PRI | NULL    |       |
+# | username   | varchar(255) | YES  |     | NULL    |       |
+# | role       | varchar(255) | YES  |     | NULL    |       |
+# | experience | int(11)      | YES  |     | NULL    |       |
+# | level      | int(11)      | YES  |     | NULL    |       |
+# | reputation | int(11)      | YES  |     | NULL    |       |
+# | warnings   | varchar(255) | YES  |     | NULL    |       |
+# +------------+--------------+------+-----+---------+-------+
+# 7 rows in set (0.00 sec)
