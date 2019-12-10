@@ -20,6 +20,10 @@ out/
 
 # End of https://www.gitignore.io/api/pycharm
 
-# ignoring .env and config files since they contain sensitive info
+# NO PICKLES FOR YOU
+*.pickle
+
+# ignoring .env, json and config files
 *.env
+*.json
 /config**

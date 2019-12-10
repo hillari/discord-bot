@@ -28,7 +28,7 @@ class Games(commands.Cog):
     @commands.command()
     async def repeat(self, ctx, times: int, content='repeating...'):
         """Repeats a message multiple times e.g. repeat <number> <text>"""
-        if times > 10:
+        if times > 20:
             await ctx.send("{} times is too much. Please Limit to 10.".format(str(times)))
         else:
             for i in range(times):

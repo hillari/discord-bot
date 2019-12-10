@@ -11,7 +11,7 @@ prefix = os.getenv('prefix')
 
 bot = commands.Bot(command_prefix=prefix)  # creates the actual bot and assigns it a prefix
 
-first_run = 1  # Hacky method to avoid initializing the db each time without commenting out code
+first_run = 0  # Hacky method to avoid initializing the db each time without commenting out code
 
 
 @bot.event
