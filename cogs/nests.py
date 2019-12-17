@@ -18,7 +18,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 # The ID and range of a sample spreadsheet.
 # TODO get these vars
 SAMPLE_SPREADSHEET_ID = '1NWXK11Lu3iBUdgR20ZYh0A4geMz-8UyM1zO9prZr350'
-SAMPLE_RANGE_NAME = 'Current Nests!A3:B'
+SAMPLE_RANGE_NAME = 'Current Nests!A3:B8'
 
 
 class Nests(commands.Cog):
@@ -32,7 +32,7 @@ class Nests(commands.Cog):
             msg = "No data found"
         else:
             for row in values:
-                msg = "Values found. See terminal"
+                msg = values
                 # Print columns A and E, which correspond to indices 0 and 4.
                 # print('%s, %s' % (row[0], row[4]))
                 print(row[0], " - ", row[1])
