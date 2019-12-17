@@ -78,7 +78,7 @@ class Games(commands.Cog):
             async with cs.get(apiUrl) as resp:
                 curr_json = await resp.json()
                 max_num = curr_json['num']
-            random_comic = random.randint(0, max_num)
+            random_comic = random.randint(1, max_num) # the first comic starts at 1
             comicUrl = 'https://xkcd.com/{}/'.format(random_comic)
             json_url = comicUrl + 'info.0.json'
             async with cs.get(json_url) as resp:
