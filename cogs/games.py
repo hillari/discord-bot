@@ -76,7 +76,8 @@ class Games(commands.Cog):
         apiUrl = 'https://xkcd.com/info.0.json'
         async with aiohttp.ClientSession() as cs:
             current = cs.get(apiUrl)
-            max_num = await current.json()['num']
+            curr_json = await current.json()
+            max_num = curr_json['num']
             random_comic = random.randint(0, max_num)
             comicUrl = 'https://xkcd.com/{}/'.format(random_comic)
             new_comic = cs.get(comicUrl.join('info.0.json'))
