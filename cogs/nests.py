@@ -17,8 +17,8 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
 # TODO get these vars
-SAMPLE_SPREADSHEET_ID = '1NWXK11Lu3iBUdgR20ZYh0A4geMz-8UyM1zO9prZr350'
-SAMPLE_RANGE_NAME = 'Current Nests!A3:B8'
+SAMPLE_SPREADSHEET_ID = ' '
+SAMPLE_RANGE_NAME = ' '
 
 
 class Nests(commands.Cog):
@@ -37,6 +37,14 @@ class Nests(commands.Cog):
                 # print('%s, %s' % (row[0], row[4]))
                 print(row[0], " - ", row[1])
         await ctx.send(msg)
+
+    @commands.command()
+    async def nest(self, ctx):
+        values = main()
+        print(type(values))
+        for row in values:
+            foo = row[0:]
+            await ctx.send(' '.join(foo))
 
 
 def main():
