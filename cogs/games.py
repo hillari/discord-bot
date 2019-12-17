@@ -78,8 +78,8 @@ class Games(commands.Cog):
             current = cs.get(apiUrl)
             max_num = await current.json()['num']
             random_comic = random.randint(0, max_num)
-            comicUrl = 'https://xkcd.com/{}/info.0.json'.format(random_comic)
-            new_comic = cs.get(comicUrl)
+            comicUrl = 'https://xkcd.com/{}/'.format(random_comic)
+            new_comic = cs.get(comicUrl.join('info.0.json'))
             date = '{}.{}.{}'.format(new_comic['day'], new_comic['month'], new_comic['year'])
             msg = '**{}**\n{}\nAlt Text:```{}```XKCD Link: <{}> ({})'.format(new_comic['safe_title'], new_comic['img'], new_comic['alt'],
                                                                                  comicUrl, date)
