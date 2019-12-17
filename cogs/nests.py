@@ -8,14 +8,35 @@ import os.path
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+##
+from discord.ext import commands
+
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 # The ID and range of a sample spreadsheet.
 # TODO get these vars
-SAMPLE_SPREADSHEET_ID = ' '
-SAMPLE_RANGE_NAME = ' '
+SAMPLE_SPREADSHEET_ID = '1NWXK11Lu3iBUdgR20ZYh0A4geMz-8UyM1zO9prZr350'
+SAMPLE_RANGE_NAME = 'Current Nests!A3:B'
+
+
+class Nests(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def printsheet(self, ctx):
+        values = main()
+        if not values:
+            msg = "No data found"
+        else:
+            for row in values:
+                msg = "Values found. See terminal"
+                # Print columns A and E, which correspond to indices 0 and 4.
+                # print('%s, %s' % (row[0], row[4]))
+                print(row[0], " - ", row[1])
+        await ctx.send(msg)
 
 
 def main():
@@ -57,6 +78,7 @@ def main():
             # Print columns A and E, which correspond to indices 0 and 4.
             # print('%s, %s' % (row[0], row[4]))
             print(row[0], " - ", row[1])
+    return values
 
 
 if __name__ == '__main__':
@@ -64,4 +86,4 @@ if __name__ == '__main__':
 
 
 def setup(bot):
-    pass
+    bot.add_cog(Nests(bot))
