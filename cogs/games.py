@@ -28,7 +28,7 @@ class Games(commands.Cog):
     @commands.command()
     async def repeat(self, ctx, times: int, content='repeating...'):
         """Repeats a message multiple times e.g. repeat <number> <text>"""
-        if times > 10:
+        if times > 20:
             await ctx.send("{} times is too much. Please Limit to 10.".format(str(times)))
         else:
             for i in range(times):
@@ -73,20 +73,21 @@ class Games(commands.Cog):
     async def xkcd(self, ctx, *searchterm: str):
         ''' Random xkcd *Not currently working*'''
 
-        apiUrl = 'https://xkcd.com{}info.0.json'
+        apiUrl = 'https://xkcd.com/info.0.json'
         async with aiohttp.ClientSession() as cs:
-            async with cs.get(apiUrl.format('/')) as r:
-                js = await r.json()
-                if ''.join(searchterm) == 'random':
-                    randomComic = random.randint(0, js['num'])
-                    async with cs.get(apiUrl.format('/' + str(randomComic) + '/')) as r:
-                        if r.status == 200:
-                            js = await r.json()
-                comicUrl = 'https://xkcd.com/{}/'.format(js['num'])
-                date = '{}.{}.{}'.format(js['day'], js['month'], js['year'])
-                msg = '**{}**\n{}\nAlt Text:```{}```XKCD Link: <{}> ({})'.format(js['safe_title'], js['img'], js['alt'],
+            async with cs.get(apiUrl) as resp:
+                curr_json = await resp.json()
+                max_num = curr_json['num']
+            random_comic = random.randint(0, max_num)
+            comicUrl = 'https://xkcd.com/{}/'.format(random_comic)
+            json_url = comicUrl + 'info.0.json'
+            async with cs.get(json_url) as resp:
+                new_comic = await resp.json()
+                date = '{}.{}.{}'.format(new_comic['day'], new_comic['month'], new_comic['year'])
+                msg = '**{}**\n{}\nAlt Text:```{}```XKCD Link: <{}> ({})'.format(new_comic['safe_title'], new_comic['img'], new_comic['alt'],
                                                                                  comicUrl, date)
-                await ctx.send(msg)
+                
+            await ctx.send(msg)
 
 
 def setup(bot):

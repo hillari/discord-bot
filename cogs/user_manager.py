@@ -10,7 +10,7 @@ class User_manager(commands.Cog):
         self.bot = bot
 
     async def new_user_dm(self, member):
-        msg = "Welcome to our awesome server!"
+        msg = "Welcome to our awesome server, I'm the totally useless bot! To see what I can do, type `!help`"
         await member.send(msg)  # Will send a DM to the member
 
     @commands.Cog.listener()

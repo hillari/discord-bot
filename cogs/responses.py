@@ -1,4 +1,5 @@
 import asyncio
+import datetime
 import random
 import os
 import discord
@@ -18,6 +19,16 @@ class Responses(commands.Cog):
         """Returns the current prefix"""
         prefix = os.getenv('prefix')
         await ctx.send("The current prefix is: " + prefix)
+
+    @commands.command()
+    async def otherping(self, ctx):
+        """Shows your current response time"""
+        msgtime = ctx.message.created_at.now()
+        await self.bot.ws.ping()
+        now = datetime.datetime.now()
+        ping = now - msgtime
+        await ctx.send("Pong! - Response Time: %s ms" % str(ping.microseconds / 1000.0))
+
 
     @commands.command()
     async def joined(self, ctx, member: discord.Member = None):

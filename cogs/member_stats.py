@@ -11,13 +11,13 @@ class Member_stats(commands.Cog):
         member_info = get_member(member, guild)
         mycursor = connection.cursor()
 
-        new_reputation = member_info[6] + reputation
+        new_reputation = member_info[5] + reputation
         sql = "UPDATE members SET reputation=%s WHERE discord_id=%s"
         mycursor.execute(sql, (new_reputation, member.id))
         connection.commit()
         try:
             print("[*] Updated user %s reputation points from %s to "
-                  "%s." % (member.name, member_info[6], new_reputation))
+                  "%s." % (member.name, member_info[5], new_reputation))
         except Exception as e:
             print("[-] Error updating reputation for %s; %s" % (member.id, e))
 
@@ -27,21 +27,21 @@ class Member_stats(commands.Cog):
         member_info = get_member(member, ctx.message.guild)
 
         embedded = discord.Embed()
-        embedded.set_footer(text="CS bot made by Hillari")
+        embedded.set_footer(text="Congrats on your meaningless internet points")
         icon_str = str(member.avatar_url)
         icon_addr = icon_str.split('.w', 1)
         author_icon_str = str(self.bot.user.avatar_url)
         author_icon = author_icon_str.split('.w', 1)
         embedded.set_author(name="Reputation stats for: " + member.display_name, icon_url=author_icon[0])
         embedded.set_thumbnail(url=icon_addr[0])
-        embedded.add_field(name="Rep", value=member_info[6], inline=True)
+        embedded.add_field(name="Rep", value=member_info[5], inline=True)
         await ctx.send(embed=embedded)
 
     @commands.command()
     async def takerep(self, ctx, member: discord.Member):
         """Takes Rep from user e.g. takerep <@user>. Cannot be yourself."""
         member_info = get_member(member, ctx.message.guild)
-        reputation = member_info[6]
+        reputation = member_info[5]
         if ctx.message.author.id == member.id:
             await ctx.send("You can't take reputation points from yourself, fool!")
             return
