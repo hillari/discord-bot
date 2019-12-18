@@ -10,15 +10,15 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 ##
 from discord.ext import commands
-
+import os
+from dotenv import load_dotenv
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
-# The ID and range of a sample spreadsheet.
-# TODO get these vars
-SAMPLE_SPREADSHEET_ID = ' '
-SAMPLE_RANGE_NAME = ' '
+load_dotenv()
+SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
+RANGE_NAME = 'Current Nests!A3:B3'
 
 
 class Nests(commands.Cog):
@@ -74,8 +74,8 @@ def main():
 
     # Call the Sheets API
     sheet = service.spreadsheets()
-    result = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                                range=SAMPLE_RANGE_NAME).execute()
+    result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
+                                range=RANGE_NAME).execute()
     values = result.get('values', [])
 
     if not values:

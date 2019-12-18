@@ -37,7 +37,7 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(bot.latency * 1000)}ms')
 
 
-@commands.has_role('Grader People')
+@commands.has_role('Bot Dev 🤖')
 @bot.command()
 async def creload(ctx):
     """Bot Creator Use ONLY"""
@@ -67,7 +67,10 @@ async def help(self, ctx):
 
 # @bot.event
 # async def on_message(message):
-#     """If the bot sees the word rude in a message, it will react with custom emoji"""
+#     """
+#     Example of on message reacts;
+#     If the bot sees the word rude in a message, it will react with custom emoji"""
+#   # I hope it's obvious why we do this
 #     if message.author == bot.user:
 #         return
 #
