@@ -15,36 +15,44 @@ from dotenv import load_dotenv
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-
+# Sheet variables
 load_dotenv()
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
-RANGE_NAME = 'Current Nests!A3:B3'
+RANGE_NAME = 'Current Nests!A3:B50'
+NEST2 = 'Current Nests!A3:D5'
+ALL_CELLS = 'Current Nests'
+
+# Global stuffs
+pkmn_dict = {}
+nesting_pkmn_list = open("./files/nesting_pokemon.txt").read().splitlines()
 
 
-class Nests(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
+def search_dict(pkmn):
+    """ Search through our dictionary and return the results"""
+    # TODO handle if the dictionary does not exist yet?
+    results = None
+    if pkmn.lower() in pkmn_dict:
+        results = pkmn_dict[pkmn.lower()]
+    return results
 
-    @commands.command()
-    async def printsheet(self, ctx):
+
+def build_nest_dict():
+    """ Helper for nest commands & functions.
+    Uses the Google Sheets API to build a dictionary from current nests. Also acts as a getter"""
+    res = not pkmn_dict
+    if res:  # Only create if it does not already exist
+        print("Creating a new dictionary")
         values = main()
-        if not values:
-            msg = "No data found"
-        else:
-            for row in values:
-                msg = values
-                # Print columns A and E, which correspond to indices 0 and 4.
-                # print('%s, %s' % (row[0], row[4]))
-                print(row[0], " - ", row[1])
-        await ctx.send(msg)
-
-    @commands.command()
-    async def nest(self, ctx):
-        values = main()
-        print(type(values))
         for row in values:
-            foo = row[0:]
-            await ctx.send(' '.join(foo))
+            if row is not None:
+                key = ''.join(row[0:1]).lower()  # Storing as lower case so we can ignoring cases when searching
+                value = list((row[1:]))
+                if key and value:
+                    pkmn_dict[key] = value
+    else:
+        print("This dict already exists")
+    # print(pkmn_dict)
+    return pkmn_dict
 
 
 def main():
@@ -75,18 +83,56 @@ def main():
     # Call the Sheets API
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
-                                range=RANGE_NAME).execute()
+                                range=ALL_CELLS).execute()
     values = result.get('values', [])
 
     if not values:
         print('No data found.')
-    else:
-        print('Pokemon, Nests:')
-        for row in values:
-            # Print columns A and E, which correspond to indices 0 and 4.
-            # print('%s, %s' % (row[0], row[4]))
-            print(row[0], " - ", row[1])
     return values
+
+# ---- Beginning of cog class/functions --- #
+
+
+class Nests(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def printsheet(self, ctx):
+        values = main()
+        if not values:
+            msg = "No data found"
+        else:
+            for row in values:
+                msg = values
+                # Print columns A and E, which correspond to indices 0 and 4.
+                # print('%s, %s' % (row[0], row[4]))
+                print(row[0], " - ", row[1])
+        await ctx.send(msg)
+
+    @commands.command()
+    async def buildnest(self, ctx):
+        build_nest_dict()
+
+    @commands.command()
+    async def nest(self, ctx, pkmn):
+
+        #TODO handle if someone entered a pokemon name incorrectly
+
+        if pkmn.lower() not in nesting_pkmn_list:
+            await ctx.send("Sorry, " + pkmn + " does not nest.")
+            return
+        build_nest_dict()
+        results = search_dict(pkmn)
+        if len(results) > 1:
+            nests = ' nests\n'
+        else:
+            nests = ' nest\n'
+        print("RESULTS: ", results)
+        if results is not None:
+            await ctx.send("Found " + pkmn + nests + '\n'.join(results))
+        else:
+            await ctx.send("Sorry, can't find any nests for " + pkmn + " right now")
 
 
 if __name__ == '__main__':
