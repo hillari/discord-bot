@@ -28,7 +28,7 @@ class Games(commands.Cog):
     @commands.command()
     async def repeat(self, ctx, times: int, content='repeating...'):
         """Repeats a message multiple times e.g. repeat <number> <text>"""
-        if times > 20:
+        if times > 10:
             await ctx.send("{} times is too much. Please Limit to 10.".format(str(times)))
         else:
             for i in range(times):
@@ -71,14 +71,14 @@ class Games(commands.Cog):
 
     @commands.command()
     async def xkcd(self, ctx, *searchterm: str):
-        ''' Random xkcd *Not currently working*'''
+        ''' Random xkcd, made awesome by Sock '''
 
         apiUrl = 'https://xkcd.com/info.0.json'
         async with aiohttp.ClientSession() as cs:
             async with cs.get(apiUrl) as resp:
                 curr_json = await resp.json()
                 max_num = curr_json['num']
-            random_comic = random.randint(1, max_num) # the first comic starts at 1
+            random_comic = random.randint(1, max_num)  # the first comic starts at 1
             comicUrl = 'https://xkcd.com/{}/'.format(random_comic)
             json_url = comicUrl + 'info.0.json'
             async with cs.get(json_url) as resp:

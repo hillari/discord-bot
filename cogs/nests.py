@@ -18,7 +18,9 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 load_dotenv()
 SPREADSHEET_ID = os.getenv('SPREADSHEET_ID')
-RANGE_NAME = 'Current Nests!A3:B3'
+RANGE_NAME = 'Current Nests!A3:B50'
+NEST2 = 'Current Nests!A3:D5'
+ALL_CELLS = 'Current Nests'
 
 
 class Nests(commands.Cog):
@@ -39,12 +41,40 @@ class Nests(commands.Cog):
         await ctx.send(msg)
 
     @commands.command()
-    async def nest(self, ctx):
+    async def buildnest(self, ctx):
+        build_nest_dict()
+
+    @commands.command()
+    async def nest(self, ctx, pkmn):
+        nesting_pkmn = nester_list()
         values = main()
-        print(type(values))
+        if pkmn.lower() not in (line.lower() for line in nesting_pkmn):
+            await ctx.send("Sorry, " + pkmn + " does not nest.")
         for row in values:
-            foo = row[0:]
-            await ctx.send(' '.join(foo))
+            if ''.join(row[0:1]) == pkmn:  # join() takes iterable (ie our row) and returns a string
+                print("Found pkmn")
+                coords = row[1:2]
+                await ctx.send("Found some " + pkmn + " nests!\n" + str(coords).strip('[]'))
+
+
+def nester_list():
+    nesting_pkmn_list = open("./files/nesting_pokemon.txt").read().splitlines()  # splitlines will get rid of newline
+    return nesting_pkmn_list
+
+
+def build_nest_dict():
+    """ Helper for nest functions
+    Uses the Google Sheets API to build a dictionary from current nests"""
+    pkmn_dict = {}
+    values = main()
+    for row in values:
+        if row is not None:
+            key = str(row[0:1])
+            value = list((row[1:]))
+            if key and value:
+                pkmn_dict[key] = value
+    print(pkmn_dict)
+    return pkmn_dict
 
 
 def main():
@@ -75,17 +105,17 @@ def main():
     # Call the Sheets API
     sheet = service.spreadsheets()
     result = sheet.values().get(spreadsheetId=SPREADSHEET_ID,
-                                range=RANGE_NAME).execute()
+                                range=ALL_CELLS).execute()
     values = result.get('values', [])
 
     if not values:
         print('No data found.')
-    else:
-        print('Pokemon, Nests:')
-        for row in values:
-            # Print columns A and E, which correspond to indices 0 and 4.
-            # print('%s, %s' % (row[0], row[4]))
-            print(row[0], " - ", row[1])
+    # else:
+    #     print('Pokemon, Nests:')
+    #     for row in values:
+    #         # Print columns A and E, which correspond to indices 0 and 4.
+    #         # print('%s, %s' % (row[0], row[4]))
+    #         print(row[0], " - ", row[1])
     return values
 
 

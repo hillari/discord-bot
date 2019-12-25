@@ -51,8 +51,8 @@ class Responses(commands.Cog):
         await ctx.send(f"""{id.member_count}""" + " members in the server")
 
     @commands.command()
-    # @commands.has_role('Grader People')
-    @commands.cooldown(1, 10, commands.BucketType.user)
+    # @commands.has_role('Bot Dev 🤖')
+    @commands.cooldown(1, 10, commands.BucketType.user)  # Don't let normies spam our bot
     async def say(self, ctx, *, arg):
         """Says what you want it to e.g. say <text>"""
         await ctx.message.delete()
