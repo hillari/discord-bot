@@ -86,7 +86,7 @@ async def on_message(message):
     """If the bot sees the words good bot it will respond *MOVE THIS*"""
     if message.author == bot.user:
         return
-    if 'good bot' in message.content:
+    if 'good bot' in message.content.lower():
         # emojid = 647707023869476874
         # emoj = bot.get_emoji(emojid)
         # await message.add_reaction(emoj)

@@ -97,8 +97,11 @@ class Nests(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+
+
     @commands.command()
     async def printsheet(self, ctx):
+        """For testing purposes. Depends on the A1 notation used in main() """
         values = main()
         if not values:
             msg = "No data found"
@@ -107,32 +110,45 @@ class Nests(commands.Cog):
                 msg = values
                 # Print columns A and E, which correspond to indices 0 and 4.
                 # print('%s, %s' % (row[0], row[4]))
-                print(row[0], " - ", row[1])
+                # print(row[0], " - ", row[1])
         await ctx.send(msg)
 
     @commands.command()
     async def buildnest(self, ctx):
+        """Creates a data structure to hold all the sheet values."""
         build_nest_dict()
 
     @commands.command()
     async def nest(self, ctx, pkmn):
+        """Returns a list of nests. Usage: nest <Abra> """
 
-        #TODO handle if someone entered a pokemon name incorrectly
+        # TODO handle if someone entered a pokemon name incorrectly
+        # Do something like this
+        #
+        # if pkmn.lower() in all_pkmn_list:
+        #     if pkmn.lower() not in nesting_pkmn_list:
+        #         await ctx.send("Sorry, " + pkmn + " does not nest.")
+        #         return
+        # else:
+        #     await ctx.send("Sorry, " + pkmn + " is not a pokemon")
+        #     return
 
-        if pkmn.lower() not in nesting_pkmn_list:
-            await ctx.send("Sorry, " + pkmn + " does not nest.")
-            return
-        build_nest_dict()
-        results = search_dict(pkmn)
-        if len(results) > 1:
-            nests = ' nests\n'
-        else:
-            nests = ' nest\n'
-        print("RESULTS: ", results)
-        if results is not None:
-            await ctx.send("Found " + pkmn + nests + '\n'.join(results))
-        else:
-            await ctx.send("Sorry, can't find any nests for " + pkmn + " right now")
+        spamchan = 646622175016779801
+        if ctx.channel.id == spamchan:
+            if pkmn.lower() not in nesting_pkmn_list:
+                await ctx.channel.send("Sorry, " + pkmn + " does not nest.")
+                return
+            build_nest_dict()
+            results = search_dict(pkmn)
+            if len(results) > 1:
+                nests = ' nests\n'
+            else:
+                nests = ' nest\n'
+            print("RESULTS: ", results)
+            if results is not None:
+                await ctx.send("Found these " + pkmn + nests + '\n'.join(results))
+            else:
+                await ctx.send("Sorry, can't find any nests for " + pkmn + " right now")
 
 
 if __name__ == '__main__':
