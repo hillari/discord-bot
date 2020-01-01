@@ -25,6 +25,7 @@ ALL_CELLS = 'Current Nests'
 # Global stuffs
 pkmn_dict = {}
 nesting_pkmn_list = open("./files/nesting_pokemon.txt").read().splitlines()
+prefix = os.getenv('prefix')
 
 
 def search_dict(pkmn):
@@ -118,37 +119,61 @@ class Nests(commands.Cog):
         """Creates a data structure to hold all the sheet values."""
         build_nest_dict()
 
-    @commands.command()
-    async def nest(self, ctx, pkmn):
-        """Returns a list of nests. Usage: nest <Abra> """
+    @commands.Cog.listener()
+    async def on_message(self, ctx):
+        # TODO make a list of ALL pokemon?? There has to be a better way to do this.
+        for name in nesting_pkmn_list:
+            if ctx.content.lower().startswith('$' + name):  # Do lower() here so that user can search w/any case
+                spamchan = 646622175016779801  # TODO don't hard code this
+                if ctx.channel.id == spamchan:
+                    if name.lower() not in nesting_pkmn_list:
+                        await ctx.channel.send("Sorry, " + name + " does not nest.")
+                        return
+                    build_nest_dict()
+                    results = search_dict(name)
+                    if len(results) > 1:
+                        nests = ' nests\n'
+                    else:
+                        nests = ' nest\n'
+                    print("RESULTS: ", results)
+                    if results is not None:
+                        await ctx.channel.send("Found these " + name + nests + '\n'.join(results))  # FIXME make these = this for single
+                    else:
+                        await ctx.channel.send("Sorry, can't find any nests for " + name + " right now")
 
-        # TODO handle if someone entered a pokemon name incorrectly
-        # Do something like this
-        #
-        # if pkmn.lower() in all_pkmn_list:
-        #     if pkmn.lower() not in nesting_pkmn_list:
-        #         await ctx.send("Sorry, " + pkmn + " does not nest.")
-        #         return
-        # else:
-        #     await ctx.send("Sorry, " + pkmn + " is not a pokemon")
-        #     return
 
-        spamchan = 646622175016779801
-        if ctx.channel.id == spamchan:
-            if pkmn.lower() not in nesting_pkmn_list:
-                await ctx.channel.send("Sorry, " + pkmn + " does not nest.")
-                return
-            build_nest_dict()
-            results = search_dict(pkmn)
-            if len(results) > 1:
-                nests = ' nests\n'
-            else:
-                nests = ' nest\n'
-            print("RESULTS: ", results)
-            if results is not None:
-                await ctx.send("Found these " + pkmn + nests + '\n'.join(results))
-            else:
-                await ctx.send("Sorry, can't find any nests for " + pkmn + " right now")
+
+    # @commands.command()
+    # async def nest(self, ctx, pkmn):
+    #     """Returns a list of nests. Usage: nest <Abra> """
+    #
+    #     # TODO handle if someone entered a pokemon name incorrectly
+    #     # Do something like this
+    #     #
+    #     # if pkmn.lower() in all_pkmn_list:
+    #     #     if pkmn.lower() not in nesting_pkmn_list:
+    #     #         await ctx.send("Sorry, " + pkmn + " does not nest.")
+    #     #         return
+    #     # else:
+    #     #     await ctx.send("Sorry, " + pkmn + " is not a pokemon")
+    #     #     return
+    #
+    #     spamchan = 646622175016779801  # TODO don't hard code this
+    #     if ctx.channel.id == spamchan:
+    #         if pkmn.lower() not in nesting_pkmn_list:
+    #             await ctx.channel.send("Sorry, " + pkmn + " does not nest.")
+    #             return
+    #         build_nest_dict()
+    #         results = search_dict(pkmn)
+    #         if len(results) > 1:
+    #             nests = ' nests\n'
+    #         else:
+    #             nests = ' nest\n'
+    #         print("RESULTS: ", results)
+    #         if results is not None:
+    #             await ctx.send("Found these " + pkmn + nests + '\n'.join(results))  # FIXME make these = this for single
+    #         else:
+    #             await ctx.send("Sorry, can't find any nests for " + pkmn + " right now")
 
 
 if __name__ == '__main__':
