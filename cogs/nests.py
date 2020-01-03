@@ -1,3 +1,5 @@
+# Author : Hillari Denny
+# ~1/1/2020
 
 # re __future__ statement:
 # https://docs.python.org/2/library/__future__.html
@@ -25,6 +27,7 @@ ALL_CELLS = 'Current Nests'
 # Global stuffs
 pkmn_dict = {}
 nesting_pkmn_list = open("./files/nesting_pokemon.txt").read().splitlines()
+prefix = os.getenv('prefix')
 
 
 def search_dict(pkmn):
@@ -42,7 +45,7 @@ def build_nest_dict():
     res = not pkmn_dict
     if res:  # Only create if it does not already exist
         print("Creating a new dictionary")
-        values = main()
+        values = main()  # FIXME restructure so we aren't using main to get sheet values
         for row in values:
             if row is not None:
                 key = ''.join(row[0:1]).lower()  # Storing as lower case so we can ignoring cases when searching
@@ -51,7 +54,6 @@ def build_nest_dict():
                     pkmn_dict[key] = value
     else:
         print("This dict already exists")
-    # print(pkmn_dict)
     return pkmn_dict
 
 
@@ -97,42 +99,60 @@ class Nests(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def printsheet(self, ctx):
-        values = main()
-        if not values:
-            msg = "No data found"
-        else:
-            for row in values:
-                msg = values
-                # Print columns A and E, which correspond to indices 0 and 4.
-                # print('%s, %s' % (row[0], row[4]))
-                print(row[0], " - ", row[1])
-        await ctx.send(msg)
+    # @commands.command()
+    # async def printsheet(self, ctx):
+    #     """For testing purposes. Depends on the A1 notation used in main() """
+    #     values = main()
+    #     if not values:
+    #         msg = "No data found"
+    #     else:
+    #         for row in values:
+    #             msg = values
+    #             # Print columns A and E, which correspond to indices 0 and 4.
+    #             # print('%s, %s' % (row[0], row[4]))
+    #             # print(row[0], " - ", row[1])
+    #     await ctx.send(msg)
 
     @commands.command()
     async def buildnest(self, ctx):
-        build_nest_dict()
+        """Creates a data structure to hold all the sheet values.
+         Intended use of this function is for Staff to create a dictionary
+         all at once after all nests have been found. """
 
-    @commands.command()
-    async def nest(self, ctx, pkmn):
-
-        #TODO handle if someone entered a pokemon name incorrectly
-
-        if pkmn.lower() not in nesting_pkmn_list:
-            await ctx.send("Sorry, " + pkmn + " does not nest.")
-            return
-        build_nest_dict()
-        results = search_dict(pkmn)
-        if len(results) > 1:
-            nests = ' nests\n'
+        # Would be good to make try/except, but what kind of exception to catch?? KeyError & ...?
+        if build_nest_dict():
+            await ctx.channel.send("Nest database built successfully.")
         else:
-            nests = ' nest\n'
-        print("RESULTS: ", results)
-        if results is not None:
-            await ctx.send("Found " + pkmn + nests + '\n'.join(results))
-        else:
-            await ctx.send("Sorry, can't find any nests for " + pkmn + " right now")
+            await ctx.channel.send("Build failed.")
+
+    @commands.Cog.listener()
+    async def on_message(self, ctx):
+        """
+        Hillari Denny and Kris Carroll
+
+        Listener will scan every message in specified channel for the prefix
+        Once it finds the prefix, we search the dictionary and report results back to channel
+        NOTE: You *must* have run !buildnest in order for this function to work"""
+
+        spamchan = 646622175016779801  # TODO don't hardcode this. Maybe put in list to check.
+        if ctx.channel.id == spamchan:
+            if ctx.content.startswith('$'):  # Only process messages appropriately prefixed
+                search = ctx.content.split()  # Grab up to first whitespace, split, pass to dict
+                pkmn = search[0][1:]
+                try:
+                    results = pkmn_dict[pkmn.lower()]
+                    msg = "Found the following nest(s) for " + pkmn.capitalize() + ":\n"
+                    for result in results:
+                        (lat, long) = result.split(',')
+                        msg += "> {}, {}\n".format(lat, long)
+                    await ctx.channel.send(msg)
+                except KeyError:
+                    results = None  # Set results to None so we can inform user why the search failed
+                    # TODO add checks for when a user misspells/enters something that is not a pokemon
+                    if pkmn not in nesting_pkmn_list:
+                        await ctx.channel.send("Sorry, " + pkmn.capitalize() + " does not nest.")
+                    if pkmn in nesting_pkmn_list and results is None:
+                        await ctx.channel.send("Sorry, we haven't found any nests for " + pkmn.capitalize() + " yet.")
 
 
 if __name__ == '__main__':
