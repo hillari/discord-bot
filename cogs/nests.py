@@ -30,30 +30,26 @@ nesting_pkmn_list = open("./files/nesting_pokemon.txt").read().splitlines()
 prefix = os.getenv('prefix')
 
 
-def search_dict(pkmn):
-    """ Search through our dictionary and return the results"""
-    # TODO handle if the dictionary does not exist yet?
-    results = None
-    if pkmn.lower() in pkmn_dict:
-        results = pkmn_dict[pkmn.lower()]
-    return results
+# Don't need this anymore, but leaving it for now.
+# def search_dict(pkmn):
+#     """ Search through our dictionary and return the results"""
+#     results = None
+#     if pkmn.lower() in pkmn_dict:
+#         results = pkmn_dict[pkmn.lower()]
+#     return results
 
 
 def build_nest_dict():
     """ Helper for nest commands & functions.
-    Uses the Google Sheets API to build a dictionary from current nests. Also acts as a getter"""
-    res = not pkmn_dict
-    if res:  # Only create if it does not already exist
-        print("Creating a new dictionary")
-        values = main()  # FIXME restructure so we aren't using main to get sheet values
-        for row in values:
-            if row is not None:
-                key = ''.join(row[0:1]).lower()  # Storing as lower case so we can ignoring cases when searching
-                value = list((row[1:]))
-                if key and value:
-                    pkmn_dict[key] = value
-    else:
-        print("This dict already exists")
+    Uses the Google Sheets API to build a dictionary from current nests."""
+    print("Creating a new dictionary")
+    values = main()  # FIXME restructure so we aren't using main to get sheet values
+    for row in values:
+        if row is not None:
+            key = ''.join(row[0:1]).lower()  # Storing as lower case so we can ignoring cases when searching
+            value = list((row[1:]))
+            if key and value:
+                pkmn_dict[key] = value
     return pkmn_dict
 
 
@@ -113,6 +109,7 @@ class Nests(commands.Cog):
     #             # print(row[0], " - ", row[1])
     #     await ctx.send(msg)
 
+    # @commands.has_role(ctx.message, nestlead)
     @commands.command()
     async def buildnest(self, ctx):
         """Creates a data structure to hold all the sheet values.
