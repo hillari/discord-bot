@@ -54,7 +54,6 @@ def build_nest_dict():
                     pkmn_dict[key] = value
     else:
         print("This dict already exists")
-    # print(pkmn_dict)
     return pkmn_dict
 
 
@@ -119,15 +118,26 @@ class Nests(commands.Cog):
         """Creates a data structure to hold all the sheet values.
          Intended use of this function is for Staff to create a dictionary
          all at once after all nests have been found. """
-        build_nest_dict()
+
+        # Would be good to make try/except, but what kind of exception to catch?? KeyError & ...?
+        if build_nest_dict():
+            await ctx.channel.send("Nest database built successfully.")
+        else:
+            await ctx.channel.send("Build failed.")
 
     @commands.Cog.listener()
     async def on_message(self, ctx):
-        # Kris's way better version of what I had
-        spamchan = 646622175016779801
+        """
+        Hillari Denny and Kris Carroll
+
+        Listener will scan every message in specified channel for the prefix
+        Once it finds the prefix, we search the dictionary and report results back to channel
+        NOTE: You *must* have run !buildnest in order for this function to work"""
+
+        spamchan = 646622175016779801  # TODO don't hardcode this. Maybe put in list to check.
         if ctx.channel.id == spamchan:
-            if ctx.content.startswith('$'):
-                search = ctx.content.split()
+            if ctx.content.startswith('$'):  # Only process messages appropriately prefixed
+                search = ctx.content.split()  # Grab up to first whitespace, split, pass to dict
                 pkmn = search[0][1:]
                 try:
                     results = pkmn_dict[pkmn.lower()]
@@ -137,8 +147,12 @@ class Nests(commands.Cog):
                         msg += "> {}, {}\n".format(lat, long)
                     await ctx.channel.send(msg)
                 except KeyError:
-                    # TODO add checks for non-nesters, no nest, not a pokemon
-                    await ctx.channel.send("No nest found")
+                    results = None  # Set results to None so we can inform user why the search failed
+                    # TODO add checks for when a user misspells/enters something that is not a pokemon
+                    if pkmn not in nesting_pkmn_list:
+                        await ctx.channel.send("Sorry, " + pkmn.capitalize() + " does not nest.")
+                    if pkmn in nesting_pkmn_list and results is None:
+                        await ctx.channel.send("Sorry, we haven't found any nests for " + pkmn.capitalize() + " yet.")
 
 
 if __name__ == '__main__':
