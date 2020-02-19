@@ -5,7 +5,7 @@ import mysql.connector
 
 load_dotenv()
 owner = os.getenv('owner')
-
+dbpw = os.getenv('dbpw')
 
 def is_owner():
     return commands.check(lambda ctx: ctx.message.author.id == owner)
@@ -14,10 +14,11 @@ def is_owner():
 def db_connect():
     connection = mysql.connector.connect(
         host='localhost',
-        database='cs_discord_bot',
-        user='hillari',
-        # charset='utf8mb4',
-        password='password',
+        database='cs_bot',
+        user='cs-bot',
+        charset='utf8mb4',
+	collation='utf8mb4_general_ci',
+        password= dbpw,
         get_warnings=True
     )
     return connection
@@ -76,3 +77,13 @@ def get_member(member, guild):
 # | warnings   | varchar(255) | YES  |     | NULL    |       |
 # +------------+--------------+------+-----+---------+-------+
 # 7 rows in set (0.00 sec)
+
+
+# ** Fix for fucky encoding issue: (define collation/charset on creation) 
+# CREATE DATABASE mydb
+#   CHARACTER SET utf8
+#   COLLATE utf8_general_ci;
+
+# Creating the members table: 
+# create table members (discord_id BIGINT(20), username VARCHAR(255), role VARCHAR(255), experience│
+# INT(11), level INT(11), reputation INT(11), warnings VARCHAR(255), PRIMARY KEY(discord_id));
