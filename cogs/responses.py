@@ -15,6 +15,33 @@ class Responses(commands.Cog):
         self.bot = bot
 
     @commands.command()
+    async def msgcount(self, ctx, channel: discord.TextChannel=None):
+        """Total messages sent per channel. Channel arg is optional"""
+        channel = channel or ctx.channel
+        count = 0
+        async for _ in channel.history(limit=None):
+            count += 1
+        await ctx.send("There have been {} messages in {}".format(count, channel.mention))
+
+
+    @commands.command()
+    async def umsgcount(self, ctx, member: discord.Member=None, channel: discord.TextChannel=None):
+        """Messages per channel per user: optional args: <member> <channelname> """
+        count = 0
+        channel = channel or ctx.channel
+        member = member or ctx.message.author
+        if member is None:  # No user arg give 
+            async for message in channel.history(limit=None):
+                if message.author == ctx.message.author:
+                    count +=1
+            await ctx.send("You've sent {} messages in {}".format(count, channel))
+        else:
+            async for message in channel.history(limit=None):
+                if message.author == member:
+                    count += 1
+            await ctx.send("<@!" + str(member.id) + ">" +  " has sent {} messages in {}".format(count, channel.mention))
+
+    @commands.command()
     async def prefix(self, ctx):
         """Returns the current prefix"""
         prefix = os.getenv('prefix')
