@@ -7,6 +7,7 @@ load_dotenv()
 owner = os.getenv('owner')
 dbpw = os.getenv('dbpw')
 
+
 def is_owner():
     return commands.check(lambda ctx: ctx.message.author.id == owner)
 
@@ -17,8 +18,8 @@ def db_connect():
         database='cs_bot',
         user='cs-bot',
         charset='utf8mb4',
-	collation='utf8mb4_general_ci',
-        password= dbpw,
+        collation='utf8mb4_general_ci',
+        password=dbpw,
         get_warnings=True
     )
     return connection
@@ -33,17 +34,26 @@ def init_all_users(ctx):
 
 
 def add_user_to_db(member, guild):
-    # TODO check if user already exists
+    # TODO test the user already exists code
     connection = db_connect()
     mycursor = connection.cursor()
-    # with db.cursor() as cursor:
-    # id = (str(guild.id) + str(member.id))
-    sql = "INSERT INTO members(discord_id, username, role, " \
-          "experience, level, reputation, warnings) " \
-          "VALUES (%s,%s,%s,%s,%s,%s,%s);"
-    data = (member.id, str(member.name), 'role', 0, 0, 0, 0)
-    mycursor.execute(sql, data)  # NOTE: execute needs same number of parameters as query
-    connection.commit()
+
+    # This needs to be tested!
+    getmembersql = "SELECT * FROM members WHERE discord_id=%s"
+    mycursor.execute(getmembersql, (member.id,))
+    res = mycursor.fetchone()
+    if not res:
+        print("New user, adding to db...")
+        sql = "INSERT INTO members(discord_id, username, role, " \
+              "experience, level, reputation, warnings) " \
+              "VALUES (%s,%s,%s,%s,%s,%s,%s);"
+        data = (member.id, str(member.name), 'role', 0, 0, 0, 0)
+        mycursor.execute(sql, data)  # NOTE: execute needs same number of parameters as query
+        connection.commit()
+    elif res:
+        print(str(member.id), "already in db")
+    else:
+        print("Not sure how we got here...some kinda bad thing happened")
     mycursor.close()
     connection.close()
 

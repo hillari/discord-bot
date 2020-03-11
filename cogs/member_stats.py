@@ -2,11 +2,13 @@ import discord
 from helpers import *
 from discord.ext import commands
 
+
 class Member_stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     def add_reputation(self, member, guild, reputation: int):
+        """Gives specified user reputation point"""
         connection = db_connect()
         member_info = get_member(member, guild)
         mycursor = connection.cursor()
@@ -39,7 +41,7 @@ class Member_stats(commands.Cog):
 
     @commands.command()
     async def takerep(self, ctx, member: discord.Member):
-        """Takes Rep from user e.g. takerep <@user>. Cannot be yourself."""
+        """Takes Rep from user. takerep <@user>. Cannot be yourself."""
         member_info = get_member(member, ctx.message.guild)
         reputation = member_info[5]
         if ctx.message.author.id == member.id:
@@ -54,11 +56,11 @@ class Member_stats(commands.Cog):
 
     @commands.command()
     async def giverep(self, ctx, member: discord.Member):
-        """Gives Rep to user e.g. giverep <@user>. Cannot be yourself."""
+        """Gives Rep to user. giverep <@user>. Cannot be yourself."""
         if ctx.message.author.id == member.id:
             await ctx.send("You can't give yourself reputation points, fool!")
             return
-        await ctx.send("Gave " + "<@!" + str(member.id) + ">" + " 1 reputation point!")
+        await ctx.send("Gave " + str(member.id) + " 1 reputation point!")
         self.add_reputation(member, ctx.message.guild, 1)
 
 
