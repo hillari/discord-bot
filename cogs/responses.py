@@ -72,7 +72,7 @@ class Responses(commands.Cog):
     async def say(self, ctx, *, arg):
         """Make bot say something e.g. say <text>"""
         print(datetime.datetime.now(), "", ctx.message.author, " used say command in ", ctx.message.channel,
-              ". Output:\n ", ctx.message.content, " ", arg, file=open("command-logs.txt", "a"))
+              ". Output:\n ", ctx.message.content, " ", arg, file=open("./files/logs/command-logs.txt", "a"))
         await ctx.message.delete()
         await ctx.send(arg)
 
