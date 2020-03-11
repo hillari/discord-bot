@@ -65,7 +65,6 @@ def get_member(member, guild):
     mycursor.execute(sql, (member.id,))
     result = mycursor.fetchone()
     if not result:
-        print("New user, adding to db...")
         add_user_to_db(member, guild)
     else:
         return result

@@ -71,8 +71,8 @@ class Responses(commands.Cog):
     @commands.cooldown(1, 10, commands.BucketType.user)  # Don't let normies spam our bot
     async def say(self, ctx, *, arg):
         """Make bot say something e.g. say <text>"""
-        print(datetime.datetime.now(), "", ctx.message.author, " used say command. Output:\n "
-              , ctx.message, " ", arg, file=open("command-logs.txt", "a"))
+        print(datetime.datetime.now(), "", ctx.message.author, " used say command in ", ctx.message.channel,
+              ". Output:\n ", ctx.message.content, " ", arg, file=open("command-logs.txt", "a"))
         await ctx.message.delete()
         await ctx.send(arg)
 

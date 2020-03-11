@@ -55,12 +55,13 @@ class Member_stats(commands.Cog):
             await ctx.send("Took a reputation point from " + str(member.display_name) + " !")
 
     @commands.command()
+
     async def giverep(self, ctx, member: discord.Member):
         """Gives Rep to user. giverep <@user>. Cannot be yourself."""
         if ctx.message.author.id == member.id:
             await ctx.send("You can't give yourself reputation points, fool!")
             return
-        await ctx.send("Gave " + str(member.id) + " 1 reputation point!")
+        await ctx.send("Gave " + str(member.display_name) + " 1 reputation point!")
         self.add_reputation(member, ctx.message.guild, 1)
 
 
