@@ -80,6 +80,8 @@ class Responses(commands.Cog):
     async def setstatus(self, ctx, *, status):
         """Sets Bot Status e.g. setstatus <status>"""
         game = discord.Game(status)
+        print(datetime.datetime.now(), "", ctx.message.author, " used setstatus command in ", ctx.message.channel,
+              ". Output:\n message: ", status, file=open("command-logs.txt", "a"))
         await ctx.message.delete()
         await self.bot.change_presence(status=discord.Status.online, activity=game)
 
