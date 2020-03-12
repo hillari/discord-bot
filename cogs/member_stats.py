@@ -24,16 +24,21 @@ class Member_stats(commands.Cog):
             print("[-] Error updating reputation for %s; %s" % (member.id, e))
 
     @commands.command()
-    async def checkrep(self, ctx, member: discord.Member):
+    async def checkrep(self, ctx, member: discord.Member = None):
         """Checks the reputation of specified user"""
+        if member is None:  # return stats for author
+            member = ctx.message.author
+        else:
+            member = member
         member_info = get_member(member, ctx.message.guild)
-
         embedded = discord.Embed()
         embedded.set_footer(text="Congrats on your meaningless internet points")
         icon_str = str(member.avatar_url)
         icon_addr = icon_str.split('.w', 1)
         author_icon_str = str(self.bot.user.avatar_url)
         author_icon = author_icon_str.split('.w', 1)
+
+
         embedded.set_author(name="Reputation stats for: " + member.display_name, icon_url=author_icon[0])
         embedded.set_thumbnail(url=icon_addr[0])
         embedded.add_field(name="Rep", value=member_info[5], inline=True)
