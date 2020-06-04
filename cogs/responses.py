@@ -23,39 +23,28 @@ class Responses(commands.Cog):
             count += 1
         await ctx.send("There have been {} messages in {}".format(count, channel.mention))
 
-
     @commands.command()
-    async def umsgcount(self, ctx, member: discord.Member=None, channel: discord.TextChannel=None):
-        """Messages per channel per user: optional args: <member> <channelname> """
+    async def umsgcount(self, ctx, member: discord.Member = None, channel: discord.TextChannel = None):
+        """Messages per channel per user. optional args: <member> <channel> """
         count = 0
         channel = channel or ctx.channel
         member = member or ctx.message.author
         if member is None:  # No user arg give 
             async for message in channel.history(limit=None):
                 if message.author == ctx.message.author:
-                    count +=1
+                    count += 1
             await ctx.send("You've sent {} messages in {}".format(count, channel))
         else:
             async for message in channel.history(limit=None):
                 if message.author == member:
                     count += 1
-            await ctx.send("<@!" + str(member.id) + ">" +  " has sent {} messages in {}".format(count, channel.mention))
+            await ctx.send(member.display_name + " has sent {} messages in {}".format(count, channel.mention))
 
     @commands.command()
     async def prefix(self, ctx):
-        """Returns the current prefix"""
+        """Returns the current prefix. Kinda useless"""
         prefix = os.getenv('prefix')
         await ctx.send("The current prefix is: " + prefix)
-
-    @commands.command()
-    async def otherping(self, ctx):
-        """Shows your current response time"""
-        msgtime = ctx.message.created_at.now()
-        await self.bot.ws.ping()
-        now = datetime.datetime.now()
-        ping = now - msgtime
-        await ctx.send("Pong! - Response Time: %s ms" % str(ping.microseconds / 1000.0))
-
 
     @commands.command()
     async def joined(self, ctx, member: discord.Member = None):
@@ -81,15 +70,18 @@ class Responses(commands.Cog):
     # @commands.has_role('Bot Dev 🤖')
     @commands.cooldown(1, 10, commands.BucketType.user)  # Don't let normies spam our bot
     async def say(self, ctx, *, arg):
-        """Says what you want it to e.g. say <text>"""
+        """Make bot say something e.g. say <text>"""
+        print(datetime.datetime.now(), "", ctx.message.author, "used say command in", 
+		ctx.message.channel,"\n   message: ", arg, file=open("command-logs.txt", "a"))
         await ctx.message.delete()
         await ctx.send(arg)
 
     @commands.command()
-    #@commands.has_role("Grader People")
     async def setstatus(self, ctx, *, status):
         """Sets Bot Status e.g. setstatus <status>"""
         game = discord.Game(status)
+        print(datetime.datetime.now(), "", ctx.message.author, "used setstatus command in", 
+		ctx.message.channel,"\n   message: ", status, file=open("command-logs.txt", "a"))
         await ctx.message.delete()
         await self.bot.change_presence(status=discord.Status.online, activity=game)
 
