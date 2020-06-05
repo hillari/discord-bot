@@ -31,3 +31,6 @@ out/
 # directory stuff
 /screen*
 *.save
+
+# logs
+command-logs.txt
