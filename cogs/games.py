@@ -139,8 +139,8 @@ class Games(commands.Cog):
                 ```
                 Command                   Description
                 -------                   -----------
-                --load {time}            Loads chat through the duration specified.
-                --say {length}           Generates a random message up to a maximum length specified.
+                --load {time}             Loads chat through the duration specified.
+                --say {length}            Generates a random message up to a maximum length specified.
                 ```
               """
         await ctx.send(msg)
