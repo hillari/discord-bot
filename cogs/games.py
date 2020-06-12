@@ -21,6 +21,9 @@ except Exception:
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.n_grams = {}
+        self.starting_grams = []
+        self.n_gram_order = 4
 
     @commands.command()
     async def choose(self, ctx, *choices: str):
@@ -107,6 +110,9 @@ class Games(commands.Cog):
                 possible_durations = ["1h", "1d", "1w"]
                 duration = args.load
                 if duration in possible_durations:
+                    self.n_grams = {}
+                    self.starting_grams = []
+                    messages = []
                     if duration == "1h":
                         print("Loading messages for the past hour...")
                         messages = await channel.history(limit=None, after=datetime.now()-timedelta(hours=1))
@@ -119,6 +125,21 @@ class Games(commands.Cog):
                         print("Loading messages from the past 7 days...")
                         messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7))
                         print("\tDONE")
+
+                    for message in messages:
+                        index = 0
+                        content = message.content
+                        while index + self.n_gram_order < len(content):
+                            n_gram = content[index : (index + self.n_gram_order)]
+                            n_gram_next = content[index + self.n_gram_order]
+                            if n_gram in self.n_grams:
+                                self.n_grams[n_gram].append(n_gram_next)
+                            else:
+                                self.n_grams[n_gram] = [n_gram_next]
+                            if index == 0 or (n_gram[0].isupper() and n_gram[1].islower()):
+                                self.starting_grams.append(n_gram)
+                            index += 1
+
                 # error handling for malformed load arg
                 else:
                     msg = """
@@ -132,7 +153,14 @@ class Games(commands.Cog):
             if args.say:
                 length = args.say
                 if length < 1000:
-                    pass
+                    current_gram = random.choice(self.starting_grams)
+                    result = current_gram
+                    for i in range(length):
+                        possibilities = self.n_grams[current_gram]
+                        next = random.choice(possibilities)
+                        result += next
+                        current_gram = result[len(result) - self.n_gram_order : len(result)]
+                    ctx.send(result)
                 else:
                     msg = """
                         ```
