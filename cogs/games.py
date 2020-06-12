@@ -98,6 +98,14 @@ class Games(commands.Cog):
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
         args = parser.parse_args(args)
 
+        if args.load:
+            duration = args.load
+            # load the chat for the past duration
+        elif args.say:
+            length = args.say
+        else:
+            await self.markov_help(ctx)
+
 
     async def markov_help(self, ctx):
         msg = """
