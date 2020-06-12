@@ -180,7 +180,8 @@ class Games(commands.Cog):
             else:
                 self.markov_help(ctx)
 
-        except:
+        except Exception as e:
+            print("Error:", e)
             self.markov_help(ctx)
 
 
