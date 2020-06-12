@@ -2,6 +2,9 @@ import asyncio
 import aiohttp
 import random
 import argparse
+from datetime import datetime, timedelta
+
+import discord
 from discord.ext import commands
 
 
@@ -92,7 +95,7 @@ class Games(commands.Cog):
 
 
     @commands.command()
-    async def markov(self, ctx, args):
+    async def markov(self, ctx, args, channel : discord.TextChannel = None):
         parser = argparse.ArgumentParser(prog="!markov")
         parser.add_argument("--load", help="load chat from the specified duration")
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
@@ -103,8 +106,15 @@ class Games(commands.Cog):
                 possible_durations = ["1h", "1d", "1w"]
                 duration = args.load
                 if duration in possible_durations:
-                    # load the chat for the past duration
-                    pass
+                    if duration == "1h":
+                        async for message in channel.history(limit=None, after=datetime.now() - timedelta(hours=1)):
+                            pass
+                    if duration == "1d":
+                        async for message in channel.history(limit=None, after=datetime.now() - timedelta(days=1)):
+                            pass
+                    if duration == "1w":
+                        async for message in channel.history(limit=None, after=datetime.now() - timedelta(days=1)):
+                            pass
                 # error handling for malformed load arg
                 else:
                     msg = """
