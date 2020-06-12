@@ -195,6 +195,7 @@ class Games(commands.Cog):
 
         except SystemExit as e:
             await ctx.send("You damn near killed me...")
+            await self.markov_help(ctx)
 
 
     async def markov_help(self, ctx):
