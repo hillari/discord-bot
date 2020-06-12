@@ -95,26 +95,29 @@ class Games(commands.Cog):
 
 
     @commands.command()
-    async def markov(self, ctx, args, channel : discord.TextChannel = None):
+    async def markov(self, ctx, command, value, channel: discord.TextChannel = None):
         parser = argparse.ArgumentParser(prog="!markov")
         parser.add_argument("--load", help="load chat from the specified duration")
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
         try:
-            args = parser.parse_args(args)
+            args = parser.parse_args([command, value])
 
             if args.load:
                 possible_durations = ["1h", "1d", "1w"]
                 duration = args.load
                 if duration in possible_durations:
                     if duration == "1h":
-                        async for message in channel.history(limit=None, after=datetime.now() - timedelta(hours=1)):
-                            pass
+                        print("Loading messages for the past hour...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(hours=1))
+                        print("\tDONE")
                     if duration == "1d":
-                        async for message in channel.history(limit=None, after=datetime.now() - timedelta(days=1)):
-                            pass
+                        print("Loading messages for the past day...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=1))
+                        print("\tDONE")
                     if duration == "1w":
-                        async for message in channel.history(limit=None, after=datetime.now() - timedelta(days=1)):
-                            pass
+                        print("Loading messages from the past 7 days...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7))
+                        print("\tDONE")
                 # error handling for malformed load arg
                 else:
                     msg = """
