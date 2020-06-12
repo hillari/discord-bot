@@ -117,15 +117,15 @@ class Games(commands.Cog):
                     messages = []
                     if duration == "1h":
                         print("Loading messages for the past hour...")
-                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(hours=1))
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(hours=1)).flatten()
                         print("\tDONE")
                     if duration == "1d":
                         print("Loading messages for the past day...")
-                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=1))
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=1)).flatten()
                         print("\tDONE")
                     if duration == "1w":
                         print("Loading messages from the past 7 days...")
-                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7))
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7)).flatten()
                         print("\tDONE")
 
                     for message in messages:
