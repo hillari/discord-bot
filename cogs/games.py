@@ -112,8 +112,7 @@ class Games(commands.Cog):
                 possible_durations = ["1h", "1d", "1w"]
                 duration = args.load
                 if duration in possible_durations:
-                    self.n_grams = {}
-                    self.starting_grams = []
+
                     messages = []
                     if duration == "1h":
                         print("Loading messages for the past hour...")
@@ -127,7 +126,8 @@ class Games(commands.Cog):
                         print("Loading messages from the past 7 days...")
                         messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7)).flatten()
                         print("\tDONE")
-
+                    self.n_grams = {}
+                    self.starting_grams = []
                     for message in messages:
                         index = 0
                         content = message.content
