@@ -165,6 +165,7 @@ class Games(commands.Cog):
                         next = random.choice(possibilities)
                         result += next
                         current_gram = result[len(result) - self.n_gram_order : len(result)]
+                    print("Final result:", result)
                     await ctx.send(result)
                     return
                 else:
