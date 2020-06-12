@@ -107,7 +107,7 @@ class Games(commands.Cog):
                     pass
                 # error handling for malformed load arg
                 else:
-                    msg="""
+                    msg = """
                         ```
                         Error: --load must be supplied with a duration
                         currently valid loads = ["1h", "1d", "1w"]
@@ -120,7 +120,7 @@ class Games(commands.Cog):
                 if length < 1000:
                     pass
                 else:
-                    msg="""
+                    msg = """
                         ```
                         Error: --say must have a length less than 1000 characters
                         example usage: !markov --say 350
