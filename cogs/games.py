@@ -153,7 +153,7 @@ class Games(commands.Cog):
                     """
                     await ctx.send(msg)
             if args.say:
-                length = args.say
+                length = int(args.say)
                 if length < 1000:
                     current_gram = random.choice(self.starting_grams)
                     result = current_gram
