@@ -2,6 +2,7 @@ import asyncio
 import aiohttp
 import random
 import argparse
+import traceback
 from datetime import datetime, timedelta
 
 import discord
@@ -23,7 +24,7 @@ class Games(commands.Cog):
         self.bot = bot
         self.n_grams = {}
         self.starting_grams = []
-        self.n_gram_order = 4
+        self.n_gram_order = 5
 
     @commands.command()
     async def choose(self, ctx, *choices: str):
@@ -102,22 +103,19 @@ class Games(commands.Cog):
         parser = argparse.ArgumentParser(prog="!markov")
         parser.add_argument("--load", help="load chat from the specified duration")
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
-        parser.add_argument("--set_degree", type=int, choices=range(1, 6), help="allows you set the order of n-grams for the Markov chain")
+        parser.add_argument("--set_degree", type=int, choices=range(1, 11), help="allows you set the order of n-grams for the Markov chain")
         try:
             args = parser.parse_args([command, value])
             if args.set_degree:
                 self.n_gram_order = args.set_degree
+                await ctx.send("N-gram degree set: {}".format(self.n_gram_order))
 
-            if args.load:
-                possible_durations = ["1h", "1d", "1w"]
+            elif args.load:
+                possible_durations = ["1d", "1w", "1m"]
                 duration = args.load
                 if duration in possible_durations:
 
                     messages = []
-                    if duration == "1h":
-                        print("Loading messages for the past hour...")
-                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(hours=1)).flatten()
-                        print("\tDONE")
                     if duration == "1d":
                         print("Loading messages for the past day...")
                         messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=1)).flatten()
@@ -126,6 +124,11 @@ class Games(commands.Cog):
                         print("Loading messages from the past 7 days...")
                         messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7)).flatten()
                         print("\tDONE")
+                    if duration == "1m":
+                        print("Loading messages from the past 30 days...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=30)).flatten()
+                        print("\tDONE")
+
                     if not messages:
                         await ctx.send("No messages within the time specified. Please choose a longer duration.")
                         return
@@ -144,7 +147,7 @@ class Games(commands.Cog):
                             if index == 0 or (n_gram[0].isupper() and n_gram[1].islower()):
                                 self.starting_grams.append(n_gram)
                             index += 1
-
+                    await ctx.send("Messages successfully loaded. Ready for chaos...")
                 # error handling for malformed load arg
                 else:
                     msg = """
@@ -155,16 +158,21 @@ class Games(commands.Cog):
                         ```
                     """
                     await ctx.send(msg)
-            if args.say:
+            elif args.say:
                 length = int(args.say)
                 if length < 1000:
                     current_gram = random.choice(self.starting_grams)
                     result = current_gram
                     for i in range(length):
-                        possibilities = self.n_grams[current_gram]
-                        next = random.choice(possibilities)
-                        result += next
-                        current_gram = result[len(result) - self.n_gram_order : len(result)]
+                        try:
+                            possibilities = self.n_grams[current_gram]
+                            next = random.choice(possibilities)
+                            result += next
+                            current_gram = result[len(result) - self.n_gram_order : len(result)]
+                        except KeyError:
+                            result += ". "
+                            current_gram = random.choice(self.starting_grams)
+                            result += current_gram
                     print("Final result:", result)
                     await ctx.send(result)
                     return
@@ -178,11 +186,12 @@ class Games(commands.Cog):
                     await ctx.send(msg)
 
             else:
-                self.markov_help(ctx)
+                await self.markov_help(ctx)
 
         except Exception as e:
             print("Error:", e)
-            self.markov_help(ctx)
+            traceback.print_exc(e)
+            await self.markov_help(ctx)
 
 
     async def markov_help(self, ctx):
