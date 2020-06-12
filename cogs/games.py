@@ -126,6 +126,9 @@ class Games(commands.Cog):
                         print("Loading messages from the past 7 days...")
                         messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7)).flatten()
                         print("\tDONE")
+                    if not messages:
+                        await ctx.send("No messages within the time specified. Please choose a longer duration.")
+                        return
                     self.n_grams = {}
                     self.starting_grams = []
                     for message in messages:
@@ -163,6 +166,7 @@ class Games(commands.Cog):
                         result += next
                         current_gram = result[len(result) - self.n_gram_order : len(result)]
                     await ctx.send(result)
+                    return
                 else:
                     msg = """
                         ```
@@ -173,22 +177,22 @@ class Games(commands.Cog):
                     await ctx.send(msg)
 
             else:
-                await self.markov_help(ctx)
+                self.markov_help(ctx)
 
         except:
-            await self.markov_help(ctx)
+            self.markov_help(ctx)
 
 
     async def markov_help(self, ctx):
         msg = """
-                ```
-                Command                   Description
-                -------                   -----------
-                --load {time}             Loads chat through the duration specified.
-                --say {length}            Generates a random message up to a maximum length specified.
-                --set-degree {order}      Sets the n-gram order for Markov chain computation.
-                ```
-              """
+```
+Command                   Description
+-------                   -----------
+--load {time}             Loads chat through the duration specified.
+--say {length}            Generates a random message up to a maximum length specified.
+--set-degree {order}      Sets the n-gram order for Markov chain computation.
+```
+        """
         await ctx.send(msg)
 
 
