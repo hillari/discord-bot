@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 import random
+import argparse
 from discord.ext import commands
 
 
@@ -88,6 +89,27 @@ class Games(commands.Cog):
                                                                                  comicUrl, date)
                 
             await ctx.send(msg)
+
+
+    @commands.command()
+    async def markov(self, ctx, args):
+        parser = argparse.ArgumentParser(prog="!markov")
+        parser.add_argument("--load", help="load chat from the specified duration")
+        parser.add_argument("--say", help="generate a random message based on the loaded chat")
+        args = parser.parse_args(args)
+
+
+    async def markov_help(self, ctx):
+        msg = """
+                ```
+                Command                   Description
+                -------                   -----------
+                --load {time}            Loads chat through the duration specified.
+                --say {length}           Generates a random message up to a maximum length specified.
+                ```
+              """
+        await ctx.send(msg)
+
 
 
 def setup(bot):
