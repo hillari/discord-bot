@@ -99,6 +99,7 @@ class Games(commands.Cog):
         parser = argparse.ArgumentParser(prog="!markov")
         parser.add_argument("--load", help="load chat from the specified duration")
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
+        parser.add_argument("--set-degree", type=int, help="allows you set the order of n-grams for the Markov chain")
         try:
             args = parser.parse_args([command, value])
 
@@ -154,6 +155,7 @@ class Games(commands.Cog):
                 -------                   -----------
                 --load {time}             Loads chat through the duration specified.
                 --say {length}            Generates a random message up to a maximum length specified.
+                --set-degree {order}      Sets the n-gram order for Markov chain computation.
                 ```
               """
         await ctx.send(msg)
