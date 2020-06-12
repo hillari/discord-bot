@@ -96,14 +96,41 @@ class Games(commands.Cog):
         parser = argparse.ArgumentParser(prog="!markov")
         parser.add_argument("--load", help="load chat from the specified duration")
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
-        args = parser.parse_args(args)
+        try:
+            args = parser.parse_args(args)
 
-        if args.load:
-            duration = args.load
-            # load the chat for the past duration
-        elif args.say:
-            length = args.say
-        else:
+            if args.load:
+                possible_durations = ["1h", "1d", "1w"]
+                duration = args.load
+                if duration in possible_durations:
+                    # load the chat for the past duration
+                    pass
+                # error handling for malformed load arg
+                else:
+                    msg="""
+                        ```
+                        Error: --load must be supplied with a duration
+                        currently valid loads = ["1h", "1d", "1w"]
+                        example usage: !markov --load 1w
+                        ```
+                    """
+                    await ctx.send(msg)
+            if args.say:
+                length = args.say
+                if length < 1000:
+                    pass
+                else:
+                    msg="""
+                        ```
+                        Error: --say must have a length less than 1000 characters
+                        example usage: !markov --say 350
+                        ```
+                    """
+                    await ctx.send(msg)
+            else:
+                await self.markov_help(ctx)
+
+        except:
             await self.markov_help(ctx)
 
 
