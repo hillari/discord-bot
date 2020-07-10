@@ -87,9 +87,6 @@ async def on_message(message):
     if message.author == bot.user:
         return
     if 'good bot' in message.content.lower():
-        # emojid = 647707023869476874
-        # emoj = bot.get_emoji(emojid)
-        # await message.add_reaction(emoj)
         await message.channel.send("Awww thanks. I try")
     await bot.process_commands(message) # We have to do this in order to use events and commands together
 
