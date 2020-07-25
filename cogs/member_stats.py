@@ -23,6 +23,29 @@ class Member_stats(commands.Cog):
         except Exception as e:
             print("[-] Error updating reputation for %s; %s" % (member.id, e))
 
+    # @commands.Command()
+    # async def rank(self, ctx, member: discord.Member = None):
+    #     if member is None:
+    #         member = ctx.message.author
+    #     else:
+
+    @commands.command()
+    async def checkranks(self, ctx):
+        msg = "Top 5 ranked members:\n"
+        replist = get_ranks()
+        # replist.sort()
+        # final = replist[-5:]
+        # mem = ctx.message.guild.get_member(replist[0][0])
+        # print(get_member(ctx.message.guild, replist[0][0]))
+        final_list = []
+        for i in range(5):
+            mem = ctx.message.guild.get_member(replist[i][0])
+            final_list.append(str(mem.display_name))
+            final_list.append(replist[i][1])
+        # await ctx.send(msg + str(replist) + str(mem.display_name))
+        await ctx.send(msg + str(final_list))
+
+
     @commands.command()
     async def checkrep(self, ctx, member: discord.Member = None):
         """Checks the reputation of specified user"""
@@ -37,7 +60,6 @@ class Member_stats(commands.Cog):
         icon_addr = icon_str.split('.w', 1)
         author_icon_str = str(self.bot.user.avatar_url)
         author_icon = author_icon_str.split('.w', 1)
-
 
         embedded.set_author(name="Reputation stats for: " + member.display_name, icon_url=author_icon[0])
         embedded.set_thumbnail(url=icon_addr[0])

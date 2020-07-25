@@ -69,6 +69,18 @@ def get_member(member, guild):
     else:
         return result
 
+
+def get_ranks():
+    connect = db_connect()
+    repcursor = connect.cursor()
+    query = "SELECT discord_id, reputation FROM members ORDER BY reputation DESC limit 5"
+    repcursor.execute(query)
+    results = repcursor.fetchall()
+    replist = [list(i) for i in results]
+    print("REP LIST: ", replist)
+    return replist
+
+
 # INSERT  INTO members (discord_id, username, role, experience, level, reputation, warnings)  VALUES (12345, 'tuname', 'trole', 0, 0, 0, 'twarning');
 # Query OK, 1 row affected (0.01 sec)
 
@@ -88,7 +100,7 @@ def get_member(member, guild):
 # 7 rows in set (0.00 sec)
 
 
-# ** Fix for fucky encoding issue: (define collation/charset on creation) 
+# ** Fix for encoding issue: (define collation/charset on creation)
 # CREATE DATABASE mydb
 #   CHARACTER SET utf8
 #   COLLATE utf8_general_ci;
