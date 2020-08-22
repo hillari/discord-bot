@@ -32,3 +32,4 @@ out/
 /screen*
 *.save
 command-logs.txt
+files/logs/command-logs.txt
