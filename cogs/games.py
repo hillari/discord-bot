@@ -99,9 +99,10 @@ class Games(commands.Cog):
 
 
     @commands.command()
-    async def markov(self, ctx, command, value, channel: discord.TextChannel = None):
+    async def markov(self, ctx, command, value, channel: discord.TextChannel = None, person : discord.Member = None):
         parser = argparse.ArgumentParser(prog="!markov")
         parser.add_argument("--load", help="load chat from the specified duration")
+        parser.add_argument("--load_person", help="load messages from a specified person")
         parser.add_argument("--say", help="generate a random message based on the loaded chat")
         parser.add_argument("--set_degree", type=int, choices=range(1, 11), help="allows you set the order of n-grams for the Markov chain")
         try:
@@ -138,7 +139,7 @@ class Games(commands.Cog):
                         index = 0
                         content = message.content
                         while index + self.n_gram_order < len(content):
-                            n_gram = content[index : (index + self.n_gram_order)]
+                            n_gram = content[index: (index + self.n_gram_order)]
                             n_gram_next = content[index + self.n_gram_order]
                             if n_gram in self.n_grams:
                                 self.n_grams[n_gram].append(n_gram_next)
@@ -158,6 +159,34 @@ class Games(commands.Cog):
                         ```
                     """
                     await ctx.send(msg)
+            elif args.load_person:
+                num_messages = args.load_person
+                if num_messages > 1000:
+                    await ctx.send("Please specify less than 1000 messages...")
+                else:
+                    messages = []
+                    async for message in channel.history(limit=None):
+                        if message.author == person:
+                            messages.append(message)
+                            if len(messages) > num_messages:
+                                break
+                    self.n_grams = {}
+                    self.starting_grams = []
+                    for message in messages:
+                        index = 0
+                        content = message.content
+                        while index + self.n_gram_order < len(content):
+                            n_gram = content[index: (index + self.n_gram_order)]
+                            n_gram_next = content[index + self.n_gram_order]
+                            if n_gram in self.n_grams:
+                                self.n_grams[n_gram].append(n_gram_next)
+                            else:
+                                self.n_grams[n_gram] = [n_gram_next]
+                            if index == 0 or (n_gram[0].isupper() and n_gram[1].islower()):
+                                self.starting_grams.append(n_gram)
+                            index += 1
+                    await ctx.send("Loaded", len(messages), "messages from user:", person, "successfully!")
+
             elif args.say:
                 length = int(args.say)
                 if length < 1000:
