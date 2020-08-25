@@ -165,7 +165,7 @@ class Games(commands.Cog):
                     await ctx.send("Please specify less than 1000 messages...")
                 else:
                     messages = []
-                    async for message in channel.history(limit=None):
+                    async for message in channel.history(limit=20000):
                         if message.author == person:
                             messages.append(message)
                             if len(messages) >= num_messages:
