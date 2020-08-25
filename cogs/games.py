@@ -168,7 +168,7 @@ class Games(commands.Cog):
                     async for message in channel.history(limit=None):
                         if message.author == person:
                             messages.append(message)
-                            if len(messages) > num_messages:
+                            if len(messages) >= num_messages:
                                 break
                     self.n_grams = {}
                     self.starting_grams = []
@@ -185,7 +185,9 @@ class Games(commands.Cog):
                             if index == 0 or (n_gram[0].isupper() and n_gram[1].islower()):
                                 self.starting_grams.append(n_gram)
                             index += 1
-                    await ctx.send("Loaded", len(messages), "messages from user:", person, "successfully!")
+                    message = 'Loaded '
+                    message = message + str(len(messages)) + " messages from user: " + str(person) + " successfully!"
+                    await ctx.send(message)
 
             elif args.say:
                 length = int(args.say)
