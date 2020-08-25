@@ -160,7 +160,7 @@ class Games(commands.Cog):
                     """
                     await ctx.send(msg)
             elif args.load_person:
-                num_messages = args.load_person
+                num_messages = int(args.load_person)
                 if num_messages > 1000:
                     await ctx.send("Please specify less than 1000 messages...")
                 else:
