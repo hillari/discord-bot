@@ -1,6 +1,11 @@
 import asyncio
 import aiohttp
 import random
+import argparse
+import traceback
+from datetime import datetime, timedelta
+
+import discord
 from discord.ext import commands
 
 
@@ -17,6 +22,9 @@ except Exception:
 class Games(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.n_grams = {}
+        self.starting_grams = []
+        self.n_gram_order = 5
 
     @commands.command()
     async def choose(self, ctx, *choices: str):
@@ -90,5 +98,151 @@ class Games(commands.Cog):
             await ctx.send(msg)
 
 
+    @commands.command()
+    async def markov(self, ctx, command, value, channel: discord.TextChannel = None, person : discord.Member = None):
+        parser = argparse.ArgumentParser(prog="!markov")
+        parser.add_argument("--load", help="load chat from the specified duration")
+        parser.add_argument("--load_person", help="load messages from a specified person")
+        parser.add_argument("--say", help="generate a random message based on the loaded chat")
+        parser.add_argument("--set_degree", type=int, choices=range(1, 11), help="allows you set the order of n-grams for the Markov chain")
+        try:
+            args = parser.parse_args([command, value])
+            if args.set_degree:
+                self.n_gram_order = args.set_degree
+                await ctx.send("N-gram degree set: {}".format(self.n_gram_order))
+
+            elif args.load:
+                possible_durations = ["1d", "1w", "1m"]
+                duration = args.load
+                if duration in possible_durations:
+
+                    messages = []
+                    if duration == "1d":
+                        print("Loading messages for the past day...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=1)).flatten()
+                        print("\tDONE")
+                    if duration == "1w":
+                        print("Loading messages from the past 7 days...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=7)).flatten()
+                        print("\tDONE")
+                    if duration == "1m":
+                        print("Loading messages from the past 30 days...")
+                        messages = await channel.history(limit=None, after=datetime.now()-timedelta(days=30)).flatten()
+                        print("\tDONE")
+
+                    if not messages:
+                        await ctx.send("No messages within the time specified. Please choose a longer duration.")
+                        return
+                    self.n_grams = {}
+                    self.starting_grams = []
+                    for message in messages:
+                        index = 0
+                        content = message.content
+                        while index + self.n_gram_order < len(content):
+                            n_gram = content[index: (index + self.n_gram_order)]
+                            n_gram_next = content[index + self.n_gram_order]
+                            if n_gram in self.n_grams:
+                                self.n_grams[n_gram].append(n_gram_next)
+                            else:
+                                self.n_grams[n_gram] = [n_gram_next]
+                            if index == 0 or (n_gram[0].isupper() and n_gram[1].islower()):
+                                self.starting_grams.append(n_gram)
+                            index += 1
+                    await ctx.send("Messages successfully loaded. Ready for chaos...")
+                # error handling for malformed load arg
+                else:
+                    msg = """
+                        ```
+                        Error: --load must be supplied with a duration
+                        currently valid loads = ["1h", "1d", "1w"]
+                        example usage: !markov --load 1w
+                        ```
+                    """
+                    await ctx.send(msg)
+            elif args.load_person:
+                num_messages = int(args.load_person)
+                if num_messages > 1000:
+                    await ctx.send("Please specify less than 1000 messages...")
+                else:
+                    messages = []
+                    async for message in channel.history(limit=20000):
+                        if message.author == person:
+                            messages.append(message)
+                            if len(messages) >= num_messages:
+                                break
+                    self.n_grams = {}
+                    self.starting_grams = []
+                    for message in messages:
+                        index = 0
+                        content = message.content
+                        while index + self.n_gram_order < len(content):
+                            n_gram = content[index: (index + self.n_gram_order)]
+                            n_gram_next = content[index + self.n_gram_order]
+                            if n_gram in self.n_grams:
+                                self.n_grams[n_gram].append(n_gram_next)
+                            else:
+                                self.n_grams[n_gram] = [n_gram_next]
+                            if index == 0 or (n_gram[0].isupper() and n_gram[1].islower()):
+                                self.starting_grams.append(n_gram)
+                            index += 1
+                    message = 'Loaded '
+                    message = message + str(len(messages)) + " messages from user: " + str(person) + " successfully!"
+                    await ctx.send(message)
+
+            elif args.say:
+                length = int(args.say)
+                if length < 1000:
+                    current_gram = random.choice(self.starting_grams)
+                    result = current_gram
+                    for i in range(length):
+                        try:
+                            possibilities = self.n_grams[current_gram]
+                            next = random.choice(possibilities)
+                            result += next
+                            current_gram = result[len(result) - self.n_gram_order : len(result)]
+                        except KeyError:
+                            result += ". "
+                            current_gram = random.choice(self.starting_grams)
+                            result += current_gram
+                    print("Final result:", result)
+                    await ctx.send(result)
+                    return
+                else:
+                    msg = """
+                        ```
+                        Error: --say must have a length less than 1000 characters
+                        example usage: !markov --say 350
+                        ```
+                    """
+                    await ctx.send(msg)
+
+            else:
+                await self.markov_help(ctx)
+
+        except Exception as e:
+            print("Error:", e)
+            traceback.print_exc(e)
+            await self.markov_help(ctx)
+
+        except SystemExit as e:
+            await ctx.send("You damn near killed me...")
+            await self.markov_help(ctx)
+
+
+    async def markov_help(self, ctx):
+        msg = """
+```
+Command                   Description
+-------                   -----------
+--load {time}             Loads chat through the duration specified.
+--say {length}            Generates a random message up to a maximum length specified.
+--set-degree {order}      Sets the n-gram order for Markov chain computation.
+```
+        """
+        await ctx.send(msg)
+
+
+
 def setup(bot):
     bot.add_cog(Games(bot))
+
