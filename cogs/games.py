@@ -34,15 +34,20 @@ class Games(commands.Cog):
         await ctx.send(random.choice(input))
 
     @commands.command()
-    async def bubblewrap(self, ctx, lines=8):
+    async def bubblewrap(self, ctx, lines = 8):
         """ Bubble wrap by Josh. Extremely theraputic."""
         bubbles = "||pop||||pop||||pop||||pop||||pop||\n"
-        if lines > 30:
-            await ctx.send("That's too many bubbles, man...")
-        elif lines == 8:
-            await ctx.send("Very Theraputic....\n"+bubbles*lines)
-        else:
-            await ctx.send("Very Theraputic....\n"+bubbles*lines)
+        try:
+            if lines > 30:
+                await ctx.send("That's too many bubbles, man...")
+            elif lines < 0:
+                await ctx.send("Negatives? Seriously? What am I a wizard? Positive numbers only bro")
+            elif lines == 8:
+                await ctx.send("Very Theraputic....\n"+bubbles*lines)
+            else:
+                await ctx.send("Very Theraputic....\n"+bubbles*lines)
+        except:
+            await ctx.send("Oh good you borked it. Integers only fool")
 
 
     @commands.command()
