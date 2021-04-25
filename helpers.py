@@ -7,6 +7,7 @@ load_dotenv()
 owner = os.getenv('owner')
 dbpw = os.getenv('dbpw')
 
+# This needs to be re-written to be...better...probably should have an API for database operations
 
 def is_owner():
     return commands.check(lambda ctx: ctx.message.author.id == owner)
@@ -34,11 +35,10 @@ def init_all_users(ctx):
 
 
 def add_user_to_db(member, guild):
-    # TODO test the user already exists code
+    # TODO test the user already exists
     connection = db_connect()
     mycursor = connection.cursor()
 
-    # This needs to be tested!
     getmembersql = "SELECT * FROM members WHERE discord_id=%s"
     mycursor.execute(getmembersql, (member.id,))
     res = mycursor.fetchone()
@@ -88,7 +88,7 @@ def get_member(member, guild):
 # 7 rows in set (0.00 sec)
 
 
-# ** Fix for fucky encoding issue: (define collation/charset on creation) 
+# ** Fix for encoding issue: (define collation/charset on creation) 
 # CREATE DATABASE mydb
 #   CHARACTER SET utf8
 #   COLLATE utf8_general_ci;

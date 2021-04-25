@@ -2,7 +2,7 @@ import discord
 from helpers import *
 from discord.ext import commands
 
-
+#FIXME we should really not have any sql in this cog...
 class Member_stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -14,7 +14,7 @@ class Member_stats(commands.Cog):
         mycursor = connection.cursor()
 
         new_reputation = member_info[5] + reputation
-        sql = "UPDATE members SET reputation=%s WHERE discord_id=%s"
+        sql = "UPDATE members SET reputation=%s WHERE discord_id=%s" 
         mycursor.execute(sql, (new_reputation, member.id))
         connection.commit()
         try:

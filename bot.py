@@ -4,14 +4,14 @@ from dotenv import load_dotenv
 from discord.ext import commands
 
 
-load_dotenv()  # dotenv is so we can read the following configs from the .env file *MOVE THIS TO HELPERS*
+load_dotenv()  # dotenv is so we can read the following configs from the .env file *move this? helpers maybe
 TOKEN = os.getenv('DISCORD_TOKEN')
 guild = os.getenv('DISCORD_GUILD')
 prefix = os.getenv('prefix')
 
 bot = commands.Bot(command_prefix=prefix)  # creates the actual bot and assigns it a prefix
 
-first_run = 0  # Hacky method to avoid initializing the db each time without commenting out code. Make a try/catch!
+first_run = 0  # Hacky method to avoid initializing the db each time
 
 
 @bot.event
