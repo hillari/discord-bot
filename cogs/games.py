@@ -34,6 +34,21 @@ class Games(commands.Cog):
         await ctx.send(random.choice(input))
 
     @commands.command()
+    async def bubblewrap(self, ctx, lines=8):
+        """ Bubble wrap by Josh. Extremely theraputic."""
+        bubbles = "||pop||||pop||||pop||||pop||||pop||\n"
+        try:
+            if lines > 30:
+                await ctx.send("That's too many bubbles, man...")
+            elif lines < 0:
+                await ctx.send("Negatives? Seriously? What am I a wizard?")
+            else:
+                await ctx.send("Very Theraputic....\n"+bubbles*lines)
+        except Exception as e:
+            await ctx.send("We borked: {}".format(e))
+
+
+    @commands.command()
     async def repeat(self, ctx, times: int, content='repeating...'):
         """Repeats a message multiple times e.g. repeat <number> <text>"""
         if times > 10:
